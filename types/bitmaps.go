@@ -1,15 +1,23 @@
 package roar
 
 //bitmaps stores 2^16 values in 32bit words -> 1024 entries
-type bitmaps struct {
-	values []uint32
+type Bitmaps struct {
+	Values []uint32
+	CType  containerType
 }
 
-func (bmp *bitmaps) init() {
-
+func CreateBitmap() Bitmaps {
+	return Bitmaps{
+		Values: make([]uint32, 1024),
+		CType:  bmps,
+	}
 }
-func (bmp *bitmaps) Add(elem uint32) error {
-	_ = elem / 32
 
+func (bmp *Bitmaps) Add(elem uint16) error {
+	index := elem / 32
+	offset := elem % 32
+	bmp.Values[index] |= (1 << offset)
 	return nil
 }
+
+//func (bmp *Bitmaps) Union()

@@ -1,4 +1,4 @@
 package roar
 
-type sarr struct {
+type Sarr struct {
 }
