@@ -1,9 +1,9 @@
 package roar
 
-type container string
+type containerType int
 
 const (
-	arr container = "Array"
-	bmp container = "Bitmap"
-	rle container = "RunLengthEncoding"
+	arr containerType = iota
+	bmp
+	rle
 )
