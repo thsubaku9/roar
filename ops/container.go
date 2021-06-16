@@ -8,7 +8,11 @@ type Container interface {
 	Copy() Container
 	Debug() string
 	Difference() Container
+	Index(element uint32) (uint32, error) //returns the index location of provided element
 	Intersection(con Container) (Container, error)
+	Isdisjoint(con Container) bool
+	Issubset(con Container) bool
+	Issuperset(con Container) bool
 	Pop() (uint32, error) //removes the element with highest value
 	Remove(element uint32)
 	Select(index uint32) (uint32, error) //return the element at the i-th index
@@ -29,10 +33,6 @@ func Roar(values ...uint32) RoaringBitmap {
 /*
 
 - Flip_range
-- Index
-- isdisjoint
-- issubset
-- issuperset
 - jaccard
 - max,min
 - numelem
