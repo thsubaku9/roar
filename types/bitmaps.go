@@ -33,3 +33,35 @@ func (bmp *Bitmaps) Union(bmp2 *Bitmaps) Bitmaps {
 	}
 	return _bmp
 }
+
+func (bmp *Bitmaps) Intersection(bmp2 *Bitmaps) Bitmaps {
+	_bmp := Bitmaps{
+		Values: make([]uint32, 1024),
+		CType:  util.Bmps,
+	}
+
+	for i := range bmp.Values {
+		_bmp.Values[i] = (*bmp).Values[i] & (*bmp2).Values[i]
+	}
+	return _bmp
+}
+
+func (bmp *Bitmaps) IsDisjoint(bmp2 *Bitmaps) bool {
+	for i := range bmp.Values {
+		if (*bmp).Values[i]&(*bmp2).Values[i] != 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func (bmp *Bitmaps) Difference(bmp2 *Bitmaps) Bitmaps {
+	_bmp := Bitmaps{
+		Values: make([]uint32, 1024),
+		CType:  util.Bmps,
+	}
+	for i := range bmp.Values {
+		_bmp.Values[i] = (*bmp).Values[i] ^ ((*bmp).Values[i] & (*bmp2).Values[i])
+	}
+	return _bmp
+}

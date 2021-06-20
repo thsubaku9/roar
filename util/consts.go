@@ -3,7 +3,7 @@ package util
 type ContainerType int
 
 const (
-	Sarr ContainerType = iota
-	Bmps
+	Bmps ContainerType = iota
 	Rles
+	Sarr
 )
