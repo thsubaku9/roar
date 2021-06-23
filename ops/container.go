@@ -2,7 +2,7 @@ package roar
 
 //Container acts as the top level object from which all interactions are done
 type Container interface {
-	Add(element uint32) error
+	Add(element uint32)
 	Clamp(start, stop uint32)
 	Clear()
 	Copy() Container
@@ -19,7 +19,7 @@ type Container interface {
 	Min() (uint32, error)
 	Pop() (uint32, error)         //removes the element with highest value
 	Rank(element uint32) []uint32 //number of elements -le the given number
-	Remove(element uint32) error
+	Remove(element uint32)
 	Select(index uint32) (uint32, error) //return the element at the i-th index
 	SymmetricDifference(con Container) (Container, error)
 	Union(con Container) (Container, error)

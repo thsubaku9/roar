@@ -15,24 +15,19 @@ func CreateBitmap() Bitmaps {
 	}
 }
 
-func (bmp *Bitmaps) Add(elem uint16) error {
+func (bmp *Bitmaps) Add(elem uint16) {
 	index := elem / 32
 	offset := elem % 32
 	bmp.Values[index] |= (1 << offset)
-	return nil
 }
 
-func (bmp *Bitmaps) Remove(elem uint16) error {
+func (bmp *Bitmaps) Remove(elem uint16) {
 	index := elem / 32
 	offset := elem % 32
 	bmp.Values[index] &= 0xFFFF ^ (1 << offset)
-	return nil
 }
 
 /*
-Clamp(start, stop uint32)
-Clear()
-Copy() Container
 Debug() string
 FlipRange(start, stop uint32)
 Index(element uint32) (uint32, error) //returns the index location of provided element
