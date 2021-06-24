@@ -46,8 +46,7 @@ func (ar *Sarr) Add(elem uint16) {
 			ar.Arr = append(ar.Arr, elem)
 		} else if elem < ar.Arr[0] {
 			ar.Arr = append([]uint16{elem}, ar.Arr...)
-		} else {
-			index, _ := ar.findIndex(elem, 0, len(ar.Arr)-1)
+		} else if index, err := ar.findIndex(elem, 0, len(ar.Arr)-1); err != nil {
 			index += 1
 			var newArr []uint16
 			newArr = append(newArr, ar.Arr[0:index]...)
