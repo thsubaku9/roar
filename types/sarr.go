@@ -122,3 +122,11 @@ func (ar *Sarr) Intersection(ar2 *Sarr) Sarr {
 
 	return _retSarr
 }
+
+func (ar *Sarr) Sarr2Bmps() Bitmaps {
+	_bmp := CreateBitmap()
+	for _, v := range ar.Arr {
+		_bmp.Add(v)
+	}
+	return _bmp
+}

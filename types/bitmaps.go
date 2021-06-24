@@ -87,3 +87,17 @@ func (bmp *Bitmaps) IsSuperset(bmp2 *Bitmaps) bool {
 	}
 	return true
 }
+
+func (bmp *Bitmaps) Bmps2Sarr() Sarr {
+	_sarr := CreateSarr()
+
+	for i, v := range bmp.Values {
+		offset := 32 * i
+		for _v, k := v, 0; _v > 0; _v, k = _v>>1, k+1 {
+			if _v&0x01 == 0x01 {
+				_sarr.Add(uint16(offset + k))
+			}
+		}
+	}
+	return _sarr
+}
