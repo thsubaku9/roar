@@ -2,7 +2,7 @@ package roar
 
 import "roar/util"
 
-//bitmaps stores 2^16 values in 32bit words -> 1024 entries
+//bitmaps stores 2^16 values in 32bit words -> 2048 entries
 type Bitmaps struct {
 	Values []uint32
 	CType  util.ContainerType
@@ -10,7 +10,7 @@ type Bitmaps struct {
 
 func CreateBitmap() Bitmaps {
 	return Bitmaps{
-		Values: make([]uint32, 1024),
+		Values: make([]uint32, 2048),
 		CType:  util.Bmps,
 	}
 }
@@ -31,7 +31,6 @@ func (bmp *Bitmaps) Remove(elem uint16) {
 Debug() string
 FlipRange(start, stop uint32)
 Index(element uint32) (uint32, error) //returns the index location of provided element
-IsSuperset(con Container) bool
 Jaccard(con Container) float32
 Max() (uint32, error)
 Min() (uint32, error)
@@ -42,10 +41,7 @@ SymmetricDifference(con Container) (Container, error)
 */
 
 func (bmp *Bitmaps) Union(bmp2 *Bitmaps) Bitmaps {
-	_bmp := Bitmaps{
-		Values: make([]uint32, 1024),
-		CType:  util.Bmps,
-	}
+	_bmp := CreateBitmap()
 
 	for i := range bmp.Values {
 		_bmp.Values[i] = (*bmp).Values[i] | (*bmp2).Values[i]
@@ -54,10 +50,7 @@ func (bmp *Bitmaps) Union(bmp2 *Bitmaps) Bitmaps {
 }
 
 func (bmp *Bitmaps) Intersection(bmp2 *Bitmaps) Bitmaps {
-	_bmp := Bitmaps{
-		Values: make([]uint32, 1024),
-		CType:  util.Bmps,
-	}
+	_bmp := CreateBitmap()
 
 	for i := range bmp.Values {
 		_bmp.Values[i] = (*bmp).Values[i] & (*bmp2).Values[i]
@@ -66,10 +59,7 @@ func (bmp *Bitmaps) Intersection(bmp2 *Bitmaps) Bitmaps {
 }
 
 func (bmp *Bitmaps) Difference(bmp2 *Bitmaps) Bitmaps {
-	_bmp := Bitmaps{
-		Values: make([]uint32, 1024),
-		CType:  util.Bmps,
-	}
+	_bmp := CreateBitmap()
 	for i := range bmp.Values {
 		_bmp.Values[i] = (*bmp).Values[i] ^ ((*bmp).Values[i] & (*bmp2).Values[i])
 	}

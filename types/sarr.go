@@ -73,3 +73,52 @@ func (ar *Sarr) Remove(elem uint16) {
 		}
 	}
 }
+
+func (ar *Sarr) Union(ar2 *Sarr) Sarr {
+	_retSarr := CreateSarr()
+	var i, j int
+	for i < len(ar.Arr) && j < len(ar2.Arr) {
+		switch {
+		case ar.Arr[i] < ar2.Arr[j]:
+			_retSarr.Arr = append(_retSarr.Arr, ar.Arr[i])
+			i++
+		case ar.Arr[i] > ar2.Arr[j]:
+			_retSarr.Arr = append(_retSarr.Arr, ar2.Arr[j])
+			j++
+		default:
+			_retSarr.Arr = append(_retSarr.Arr, ar.Arr[i])
+			i++
+			j++
+		}
+	}
+
+	for i < len(ar.Arr) {
+		_retSarr.Arr = append(_retSarr.Arr, ar.Arr[i])
+		i++
+	}
+	for j < len(ar2.Arr) {
+		_retSarr.Arr = append(_retSarr.Arr, ar2.Arr[j])
+		j++
+	}
+
+	return _retSarr
+}
+
+func (ar *Sarr) Intersection(ar2 *Sarr) Sarr {
+	_retSarr := Sarr{}
+
+	for i, j := 0, 0; i < len(ar.Arr) && j < len(ar2.Arr); i, j = i+1, j+1 {
+		switch {
+		case ar.Arr[i] < ar2.Arr[j]:
+			i++
+		case ar.Arr[i] > ar2.Arr[j]:
+			j++
+		default:
+			_retSarr.Arr = append(_retSarr.Arr, ar.Arr[i])
+			i++
+			j++
+		}
+	}
+
+	return _retSarr
+}
