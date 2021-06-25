@@ -28,8 +28,6 @@ func (bmp *Bitmaps) Remove(elem uint16) {
 }
 
 /*
-Debug() string
-FlipRange(start, stop uint32)
 Index(element uint32) (uint32, error) //returns the index location of provided element
 Jaccard(con Container) float32
 Max() (uint32, error)
