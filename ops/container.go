@@ -25,8 +25,6 @@ type Container interface {
 	Union(con Container) (Container, error)
 }
 
-//TODO - Overriding default or, and operations
-
 //TODO - sub container conversion will depend on current size of sub container vs alternatives
 type RoaringBitmap struct {
 	key     []uint16
