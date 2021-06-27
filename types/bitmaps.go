@@ -99,3 +99,10 @@ func (bmp *Bitmaps) Bmps2Sarr() Sarr {
 	}
 	return _sarr
 }
+
+//TODO - Implement Bmps2Rles
+func (bmp *Bitmaps) Bmps2Rles() Rles {
+	_rles := CreateRles()
+
+	return _rles
+}

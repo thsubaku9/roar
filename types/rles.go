@@ -1,7 +1,6 @@
 package roar
 
 import (
-	"fmt"
 	"roar/util"
 )
 
@@ -18,36 +17,6 @@ func CreateRles() Rles {
 	return Rles{make([]rlePair, 0), util.Rles}
 }
 
-//findIndex finds the location after which the given elem should be inserted
-func (rle *Rles) findIndex(p rlePair, start, end int) (int, error) {
-	if end < start {
-		return -1, fmt.Errorf("array is empty")
-	}
-
-	mid := (start + end) / 2
-
-	if start == end {
-		//check overlap region
-		if rle.RlePairs[mid].isSubSegment(p) || rle.RlePairs[mid].lSideOverlap(p) || rle.RlePairs[mid].rSideOverlap(p) || p.isSubSegment(rle.RlePairs[mid]) {
-			return mid, nil
-		}
-		if p.Start+p.RunLen < rle.RlePairs[mid].Start {
-			return mid - 1, fmt.Errorf("no overlap")
-		}
-		if rle.RlePairs[mid].Start+rle.RlePairs[mid].RunLen < p.Start {
-			return mid, fmt.Errorf("no overlap")
-		}
-	}
-
-	if rle.RlePairs[mid].Start+rle.RlePairs[mid].RunLen < p.Start {
-		return rle.findIndex(p, mid+1, end)
-	}
-
-	//p.Start+p.RunLen <= rle.RlePairs[mid].Start
-	return rle.findIndex(p, start, mid)
-
-}
-
 func (p1 rlePair) lSideOverlap(p2 rlePair) bool {
 	return (p2.Start+p2.RunLen >= p1.Start) && p2.Start+p2.RunLen <= p1.Start+p1.RunLen
 }
@@ -60,7 +29,8 @@ func (p1 rlePair) isSubSegment(p2 rlePair) bool {
 	return p1.Start <= p2.Start && p1.Start+p1.RunLen >= p2.Start+p2.RunLen
 }
 
-func (p1 rlePair) mergeReturn(p2 rlePair) rlePair {
+//mergeReturn assumes the two pairs do overlap and combines them
+func (p1 rlePair) overlapReturn(p2 rlePair) rlePair {
 	return rlePair{p1.Start, p1.RunLen + p2.RunLen - (p1.Start + p1.RunLen - p2.Start)}
 }
 
@@ -79,38 +49,42 @@ func (rle *Rles) Add(p rlePair) {
 		rle.RlePairs = append(rle.RlePairs, p)
 		return
 	}
-	pos, _ := rle.findIndex(p, 0, len(rle.RlePairs)-1)
-	pos = pos + 1
+	_new_rles := make([]rlePair, 0)
 
-	_rles := rle.RlePairs[0:pos]
-	_rles_l_index := len(_rles) - 1
+	//starting insertion
+	if p.Start < rle.RlePairs[0].Start {
+		_new_rles = append(_new_rles, p)
 
-	//check successive overlaps
-	if _rles_l_index >= 0 {
-		if _rles[_rles_l_index].lSideOverlap(p) {
+		var i int
+		for i, _ = range rle.RlePairs {
+			//check if it is a subsegment
+			if p.isSubSegment(rle.RlePairs[i]) {
+				continue
+			}
+			//check for roverlap
 
-		} else if _rles[_rles_l_index].rSideOverlap(p) {
-
-		} else if _rles[_rles_l_index].isSubSegment(p) {
-
-		} else {
-			_rles = append(_rles, p)
+			// if neither then append directly to _new_rles
 		}
+		rle.RlePairs = _new_rles
+	} else if p.Start > rle.RlePairs[len(rle.RlePairs)-1].Start+rle.RlePairs[len(rle.RlePairs)-1].RunLen {
+		rle.RlePairs = append(rle.RlePairs, p)
 	} else {
-		_rles = append(_rles, p)
+		var i int
+		for i, _ = range rle.RlePairs {
+			if rle.RlePairs[i].Start > p.Start {
+				break
+			}
+		}
+		//this is the insertion point, check for loverlap. after inserting keep checking for roverlap/subsegment until there isn't any
 	}
-
-	for _, v := range rle.RlePairs[pos:len(rle.RlePairs)] {
-
-	}
-
+	//iterate through all elems, in case of overlap combine properly
 }
 
 func (rle *Rles) Remove(p rlePair) {
 	if len(rle.RlePairs) == 0 {
 		return
 	}
-	pos, _ := rle.findIndex(p, 0, len(rle.RlePairs)-1)
+	//iterate through all elems, in case of overlap split properly
 }
 
 func (rle *Rles) Union(rle2 *Rles) Rles {
