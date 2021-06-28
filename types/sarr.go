@@ -151,11 +151,11 @@ func (ar *Sarr) Sarr2Rles() Rles {
 	var startPos, endPos int
 	for endPos = 1; endPos <= len(ar.Arr)-1; endPos++ {
 		if ar.Arr[endPos-1] != ar.Arr[endPos]-1 {
-			_rle.RlePairs = append(_rle.RlePairs, rlePair{Start: ar.Arr[startPos], RunLen: uint16(endPos - startPos - 1)})
+			_rle.RlePairs = append(_rle.RlePairs, RlePair{Start: ar.Arr[startPos], RunLen: uint16(endPos - startPos - 1)})
 			startPos = endPos
 		}
 	}
 
-	_rle.RlePairs = append(_rle.RlePairs, rlePair{Start: ar.Arr[startPos], RunLen: uint16(endPos - startPos - 1)})
+	_rle.RlePairs = append(_rle.RlePairs, RlePair{Start: ar.Arr[startPos], RunLen: uint16(endPos - startPos - 1)})
 	return _rle
 }
