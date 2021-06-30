@@ -7,3 +7,7 @@ const (
 	Rles
 	Sarr
 )
+
+const (
+	SplitVal uint32 = 65536
+)

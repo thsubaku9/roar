@@ -1,5 +1,7 @@
 package roar
 
+import . "roar/util"
+
 //Container acts as the top level object from which all interactions are done
 type Container interface {
 	Add(element uint32)
@@ -25,14 +27,48 @@ type Container interface {
 	Union(con Container) (Container, error)
 }
 
+type SubContainer interface {
+	Add(element uint16)
+	Difference() SubContainer
+	Index(element uint16) (uint16, error) //returns the index location of provided element
+	Intersection(con Container) (Container, error)
+	IsDisjoint(con Container) bool
+	IsSubset(con Container) bool
+	IsSuperset(con Container) bool
+	Max() (uint16, error)
+	Min() (uint16, error)
+	Pop() (uint16, error)         //removes the element with highest value
+	Rank(element uint16) []uint16 //number of elements -le the given number
+	Remove(element uint16)
+	SymmetricDifference(con Container) (Container, error)
+	Union(con Container) (Container, error)
+}
+
 //TODO - sub container conversion will depend on current size of sub container vs alternatives
 type RoaringBitmap struct {
-	key     []uint16
-	value   []Container
-	numElem uint32
+	subContainers []*SubContainer
+	numElem       uint32
 }
 
 //Roar returns a new RoaringBitmap
 func Roar(values ...uint32) RoaringBitmap {
-	return RoaringBitmap{key: nil, value: nil, numElem: 0}
+	return RoaringBitmap{subContainers: make([]*SubContainer, 16), numElem: 0}
+}
+
+func (r *RoaringBitmap) Add(element uint32) {
+	key, val := int(element/SplitVal), uint16(element%SplitVal)
+	if r.subContainers[key] == nil {
+		// set a default container type
+		r.subContainers[key] = new(SubContainer)
+	}
+	(*r.subContainers[key]).Add(val)
+}
+
+func (r *RoaringBitmap) Remove(element uint32) {
+	key, val := int(element/SplitVal), uint16(element%SplitVal)
+	if r.subContainers[key] == nil {
+		// set a default container type
+		r.subContainers[key] = new(SubContainer)
+	}
+	(*r.subContainers[key]).Remove(val)
 }
