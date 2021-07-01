@@ -18,11 +18,11 @@ func CreateRles() Rles {
 }
 
 func (p1 RlePair) lSideOverlap(p2 RlePair) bool {
-	return (p2.Start+p2.RunLen >= p1.Start) && p2.Start+p2.RunLen <= p1.Start+p1.RunLen
+	return (p2.Start+p2.RunLen >= p1.Start) && p2.Start+p2.RunLen <= p1.Start+p1.RunLen && p2.Start < p1.Start
 }
 
 func (p1 RlePair) rSideOverlap(p2 RlePair) bool {
-	return (p2.Start >= p1.Start) && (p2.Start <= p1.Start+p1.RunLen)
+	return (p2.Start >= p1.Start) && (p2.Start <= p1.Start+p1.RunLen) && p2.Start+p2.RunLen > p1.Start+p1.RunLen
 }
 
 func (p1 RlePair) isSubSegment(p2 RlePair) bool {
@@ -54,13 +54,17 @@ func (p1 RlePair) mergeReturn(p2 RlePair) RlePair {
 func (p1 RlePair) splitReturn(p2 RlePair) (*RlePair, *RlePair) {
 	if p1.Start >= p2.Start {
 		if p1.Start+p1.RunLen <= p2.Start+p2.RunLen {
+			//p1 is subsegment
 			return nil, nil
 		}
+		//lSideOverlap
 		return nil, &RlePair{p2.Start + p2.RunLen + 1, p1.Start + p1.RunLen - (p2.Start + p2.RunLen + 1)}
 	} else if p1.Start < p2.Start {
 		if p1.Start+p1.RunLen > p2.Start+p2.RunLen {
+			//p2 is subsegment
 			return &RlePair{p1.Start, p2.Start - 1 - p1.Start}, &RlePair{p2.Start + p2.RunLen + 1, p1.Start + p1.RunLen - (p2.Start + p2.RunLen + 1)}
 		}
+		//rSideOverlap
 		return &RlePair{p1.Start, p2.Start - 1 - p1.Start}, nil
 	}
 
@@ -168,6 +172,7 @@ func (rle *Rles) Remove(p RlePair) {
 
 	for ; i < n && p.isSubSegment(rle.RlePairs[i]); i++ {
 	}
+
 	if i < n {
 		if rle.RlePairs[i].lSideOverlap(p) {
 			_, toInsert := rle.RlePairs[i].splitReturn(p)
