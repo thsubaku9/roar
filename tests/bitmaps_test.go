@@ -39,4 +39,9 @@ func TestBitmapSetOps(t *testing.T) {
 
 		assert.Equal(t, []uint16{0, 31, 32}, _sarr.Arr, "Sarr Conversion failed")
 	})
+	t.Run("Check Rles Conversion", func(t *testing.T) {
+		_rles := bitmap_0.Bmps2Rles()
+
+		assert.Equal(t, nil, _rles, "Rles Conversion failed")
+	})
 }

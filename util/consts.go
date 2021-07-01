@@ -10,4 +10,5 @@ const (
 
 const (
 	SplitVal uint32 = 65536
+	BmpRange int    = 32
 )
