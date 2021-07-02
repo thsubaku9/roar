@@ -67,7 +67,6 @@ func (p1 RlePair) splitReturn(p2 RlePair) (*RlePair, *RlePair) {
 		//rSideOverlap
 		return &RlePair{p1.Start, p2.Start - 1 - p1.Start}, nil
 	}
-
 	// code won't reach here
 	return nil, nil
 }
@@ -168,6 +167,7 @@ func (rle *Rles) Remove(p RlePair) {
 	case rle.RlePairs[i].rSideOverlap(p):
 		toInsert, _ := rle.RlePairs[i].splitReturn(p)
 		_new_rles = append(_new_rles, *toInsert)
+		i++
 	}
 
 	for ; i < n && p.isSubSegment(rle.RlePairs[i]); i++ {
@@ -196,4 +196,28 @@ func (rle *Rles) Intersection(rle2 *Rles) Rles {
 	_rle := CreateRles()
 
 	return _rle
+}
+
+func (rle *Rles) Rles2Sarr() Sarr {
+	_sarr := CreateSarr()
+	var _arr []uint16
+
+	for _, v := range rle.RlePairs {
+		for j := v.Start; j <= v.Start+v.RunLen; j++ {
+			_arr = append(_arr, j)
+		}
+	}
+	_sarr.Arr = _arr
+	return _sarr
+}
+
+func (rle *Rles) Rles2Bmps() Bitmaps {
+	_bmps := CreateBitmap()
+
+	for _, v := range rle.RlePairs {
+		for j := v.Start; j <= v.Start+v.RunLen; j++ {
+			_bmps.Add(j)
+		}
+	}
+	return _bmps
 }

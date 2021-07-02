@@ -1,7 +1,6 @@
 package roar
 
 import (
-	"log"
 	"roar/util"
 )
 
@@ -107,28 +106,26 @@ func (bmp *Bitmaps) Bmps2Sarr() Sarr {
 func (bmp *Bitmaps) Bmps2Rles() Rles {
 	_rles := CreateRles()
 	for i, v := range bmp.Values {
-		offset := 32 * i
-		var iter, _start, _end int
 
-		log.Printf("Current Index - %v", i)
 		if v == 0 {
 			continue
 		}
+		offset := 32 * i
+		var iter, _start, _end int
 
 	innerL:
 		for iter < util.BmpRange {
-			log.Printf("Current iterIndex - %v", iter)
 			for ; (1 << iter & v) == 0; iter++ {
 				if iter >= util.BmpRange {
 					break innerL
 				}
 			}
+
 			_start = iter
-			log.Printf("Current startIndex - %v", _start)
 			for ; (1 << iter & v) > 0; iter++ {
 			}
 			_end = iter - 1
-			log.Printf("Current endIndex - %v", _end)
+
 			_rles.RlePairs = append(_rles.RlePairs, RlePair{uint16(offset + _start), uint16(_end - _start)})
 		}
 	}
