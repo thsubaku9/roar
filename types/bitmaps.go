@@ -29,16 +29,33 @@ func (bmp *Bitmaps) Remove(elem uint16) {
 	bmp.Values[index] &= 0xFFFF ^ (1 << offset)
 }
 
-/*
-Index(element uint32) (uint32, error) //returns the index location of provided element
-Jaccard(con Container) float32
-Max() (uint32, error)
-Min() (uint32, error)
-Pop() (uint32, error)         //removes the element with highest value
-Rank(element uint32) []uint32 //number of elements -le the given number
-Select(index uint32) (uint32, error) //return the element at the i-th index
-SymmetricDifference(con Container) (Container, error)
-*/
+func (bmp *Bitmaps) Max() (uint16, error) {
+	return 0, nil
+}
+
+func (bmp *Bitmaps) Min() (uint16, error) {
+	return 0, nil
+}
+
+//Pop removes the element with highest value
+func (bmp *Bitmaps) Pop() (uint32, error) {
+	return 0, nil
+}
+
+//Select returns the element at the i-th index
+func (bmp *Bitmaps) Select(index uint16) (uint16, error) {
+
+}
+
+//Index returns the index location of provided element
+func (bmp *Bitmaps) Index(elem uint16) (uint16, error) {
+
+}
+
+//Rank returns number of elements -le the given number
+func (bmp *Bitmaps) Rank(elem uint16) (uint16, error) {
+
+}
 
 func (bmp *Bitmaps) Union(bmp2 *Bitmaps) Bitmaps {
 	_bmp := CreateBitmap()
@@ -64,6 +81,11 @@ func (bmp *Bitmaps) Difference(bmp2 *Bitmaps) Bitmaps {
 		_bmp.Values[i] = (*bmp).Values[i] ^ ((*bmp).Values[i] & (*bmp2).Values[i])
 	}
 	return _bmp
+}
+
+//{1, 2, 3} - {0, 1} = {0, 2, 3}
+func (bmp *Bitmaps) SymmetricDifference(bmp2 *Bitmaps) Bitmaps {
+
 }
 
 func (bmp *Bitmaps) IsDisjoint(bmp2 *Bitmaps) bool {
@@ -102,7 +124,6 @@ func (bmp *Bitmaps) Bmps2Sarr() Sarr {
 	return _sarr
 }
 
-//TODO - Implement Bmps2Rles
 func (bmp *Bitmaps) Bmps2Rles() Rles {
 	_rles := CreateRles()
 	for i, v := range bmp.Values {
@@ -129,7 +150,6 @@ func (bmp *Bitmaps) Bmps2Rles() Rles {
 			_rles.RlePairs = append(_rles.RlePairs, RlePair{uint16(offset + _start), uint16(_end - _start)})
 		}
 	}
-
 	//compact the _rles array
 	return _rles
 }

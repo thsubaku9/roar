@@ -23,7 +23,7 @@ type Container interface {
 	Rank(element uint32) []uint32 //number of elements -le the given number
 	Remove(element uint32)
 	Select(index uint32) (uint32, error) //return the element at the i-th index
-	SymmetricDifference(con Container) (Container, error)
+	SymmetricDifference(con Container) Container
 	Union(con Container) (Container, error)
 }
 
@@ -40,7 +40,7 @@ type SubContainer interface {
 	Pop() (uint16, error)         //removes the element with highest value
 	Rank(element uint16) []uint16 //number of elements -le the given number
 	Remove(element uint16)
-	SymmetricDifference(con Container) (Container, error)
+	SymmetricDifference(con Container) Container
 	Union(con Container) (Container, error)
 }
 
