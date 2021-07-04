@@ -1,6 +1,7 @@
 package roar
 
 import (
+	"fmt"
 	"roar/util"
 )
 
@@ -12,7 +13,7 @@ type Bitmaps struct {
 
 func CreateBitmap() Bitmaps {
 	return Bitmaps{
-		Values: make([]uint32, 2048),
+		Values: make([]uint32, util.BmpsLen),
 		CType:  util.Bmps,
 	}
 }
@@ -30,31 +31,51 @@ func (bmp *Bitmaps) Remove(elem uint16) {
 }
 
 func (bmp *Bitmaps) Max() (uint16, error) {
-	return 0, nil
+	var shiftPos uint32 = uint32(util.BmpRange - 1)
+	for i := util.BmpsLen - 1; i >= 0; i-- {
+		if bmp.Values[i] != 0 {
+			for ; bmp.Values[i]&0x01<<shiftPos == 0x00 && shiftPos >= 0; shiftPos-- {
+			}
+			offset := uint32(32 * i)
+			return uint16(offset + shiftPos), nil
+		}
+	}
+	return 0, fmt.Errorf("Bitmap is empty")
 }
 
 func (bmp *Bitmaps) Min() (uint16, error) {
-	return 0, nil
+	var shiftPos uint32 = 0
+	for i := 0; i < util.BmpsLen; i++ {
+		if bmp.Values[i] != 0 {
+			for ; bmp.Values[i]&0x01<<shiftPos == 0x00 && shiftPos < uint32(util.BmpsLen); shiftPos++ {
+			}
+			offset := uint32(32 * i)
+			return uint16(offset + shiftPos), nil
+		}
+	}
+	return 0, fmt.Errorf("Bitmap is empty")
 }
 
 //Pop removes the element with highest value
-func (bmp *Bitmaps) Pop() (uint32, error) {
-	return 0, nil
+func (bmp *Bitmaps) Pop() (uint16, error) {
+	_max, err := bmp.Max()
+	bmp.Remove(_max)
+	return _max, err
 }
 
 //Select returns the element at the i-th index
 func (bmp *Bitmaps) Select(index uint16) (uint16, error) {
-
+	return 0, fmt.Errorf("TODO")
 }
 
 //Index returns the index location of provided element
 func (bmp *Bitmaps) Index(elem uint16) (uint16, error) {
-
+	return 0, fmt.Errorf("TODO")
 }
 
 //Rank returns number of elements -le the given number
 func (bmp *Bitmaps) Rank(elem uint16) (uint16, error) {
-
+	return 0, fmt.Errorf("TODO")
 }
 
 func (bmp *Bitmaps) Union(bmp2 *Bitmaps) Bitmaps {
@@ -85,7 +106,13 @@ func (bmp *Bitmaps) Difference(bmp2 *Bitmaps) Bitmaps {
 
 //{1, 2, 3} - {0, 1} = {0, 2, 3}
 func (bmp *Bitmaps) SymmetricDifference(bmp2 *Bitmaps) Bitmaps {
+	_bmp := CreateBitmap()
 
+	for i := 0; i < util.BmpsLen; i++ {
+		_bmp.Values[i] = bmp.Values[i] ^ bmp2.Values[i]
+	}
+
+	return _bmp
 }
 
 func (bmp *Bitmaps) IsDisjoint(bmp2 *Bitmaps) bool {

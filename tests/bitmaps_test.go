@@ -23,17 +23,26 @@ func TestBitmapSetOps(t *testing.T) {
 	bitmap_1.Add(31)
 	t.Run("Check Union operation", func(t *testing.T) {
 		res := bitmap_0.Union(&bitmap_1)
-
-		required := uint32(0b10000000000000011000000000000001)
-		assert.Equal(t, res.Values[0], required, "Bitmap Union Failed")
+		required_0 := uint32(0b10000000000000011000000000000001)
+		assert.Equal(t, res.Values[0], required_0, "Bitmap Union Failed")
 	})
 	t.Run("Check Intersection operation", func(t *testing.T) {
 		res := bitmap_0.Intersection(&bitmap_1)
-
-		required := uint32(1<<0 | 1<<31)
-
-		assert.Equal(t, res.Values[0], required, "Bitmap Intersection Failed")
+		required_0 := uint32(1<<0 | 1<<31)
+		assert.Equal(t, res.Values[0], required_0, "Bitmap Intersection Failed")
 	})
+
+	t.Run("Check SymmetricDifference", func(t *testing.T) {
+		res := bitmap_0.SymmetricDifference(&bitmap_1)
+		required_0 := uint32(1<<15 | 1<<16)
+		assert.Equal(t, res.Values[0], required_0, "Bitmap SymmetricDifference Failed")
+	})
+
+	/*
+		t.Run("Check Difference", func(t *testing.T) {
+			//TODO
+		})
+	*/
 	t.Run("Check Sarr Conversion", func(t *testing.T) {
 		_sarr := bitmap_0.Bmps2Sarr()
 
@@ -41,7 +50,7 @@ func TestBitmapSetOps(t *testing.T) {
 	})
 	t.Run("Check Rles Conversion", func(t *testing.T) {
 		_rles := bitmap_0.Bmps2Rles()
-
+		//TODO -> implement rle compaction
 		assert.Equal(t, nil, _rles, "Rles Conversion failed")
 	})
 }
