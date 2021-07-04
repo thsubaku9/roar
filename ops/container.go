@@ -19,6 +19,7 @@ type Container interface {
 	Jaccard(con Container) float32
 	Max() (uint32, error)
 	Min() (uint32, error)
+	NumElem() uint32
 	Pop() (uint32, error)         //removes the element with highest value
 	Rank(element uint32) []uint32 //number of elements -le the given number
 	Remove(element uint32)
@@ -37,6 +38,7 @@ type SubContainer interface {
 	IsSuperset(con Container) bool
 	Max() (uint16, error)
 	Min() (uint16, error)
+	NumElem() uint16
 	Pop() (uint16, error)         //removes the element with highest value
 	Rank(element uint16) []uint16 //number of elements -le the given number
 	Remove(element uint16)

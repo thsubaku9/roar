@@ -2,6 +2,7 @@ package roar
 
 import (
 	"fmt"
+	"math/bits"
 	"roar/util"
 )
 
@@ -40,7 +41,7 @@ func (bmp *Bitmaps) Max() (uint16, error) {
 			return uint16(offset + shiftPos), nil
 		}
 	}
-	return 0, fmt.Errorf("Bitmap is empty")
+	return 0, fmt.Errorf("EmptyBitmapError")
 }
 
 func (bmp *Bitmaps) Min() (uint16, error) {
@@ -53,7 +54,7 @@ func (bmp *Bitmaps) Min() (uint16, error) {
 			return uint16(offset + shiftPos), nil
 		}
 	}
-	return 0, fmt.Errorf("Bitmap is empty")
+	return 0, fmt.Errorf("EmptyBitmapError")
 }
 
 //Pop removes the element with highest value
@@ -65,17 +66,55 @@ func (bmp *Bitmaps) Pop() (uint16, error) {
 
 //Select returns the element at the i-th index
 func (bmp *Bitmaps) Select(index uint16) (uint16, error) {
-	return 0, fmt.Errorf("TODO")
+	totalElems := uint16(0)
+
+	for i, v := range bmp.Values {
+		if v != 0 {
+			for j := 0; j < util.BmpRange; j++ {
+				if v&1<<j != 0x00 {
+					if totalElems == index {
+						offset := i * 32
+						return uint16(offset + j), nil
+					}
+					totalElems++
+				}
+			}
+		}
+	}
+	return 0, fmt.Errorf("IndexOutOfBounds")
 }
 
 //Index returns the index location of provided element
 func (bmp *Bitmaps) Index(elem uint16) (uint16, error) {
-	return 0, fmt.Errorf("TODO")
+	totalElems := uint16(0)
+
+	for i, v := range bmp.Values {
+		if v != 0 {
+			for j := 0; j < util.BmpRange; j++ {
+				if v&1<<j != 0x00 {
+					offset := i * 32
+					if uint16(offset+j) == elem {
+						return totalElems, nil
+					}
+					totalElems++
+				}
+			}
+		}
+	}
+	return 0, fmt.Errorf("ElementNotFound")
 }
 
 //Rank returns number of elements -le the given number
 func (bmp *Bitmaps) Rank(elem uint16) (uint16, error) {
 	return 0, fmt.Errorf("TODO")
+}
+
+func (bmp *Bitmaps) NumElem() uint16 {
+	totalElems := 0
+	for _, v := range bmp.Values {
+		totalElems += bits.OnesCount32(v)
+	}
+	return uint16(totalElems)
 }
 
 func (bmp *Bitmaps) Union(bmp2 *Bitmaps) Bitmaps {
