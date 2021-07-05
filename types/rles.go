@@ -39,9 +39,9 @@ func (p1 RlePair) overlapReturn(p2 RlePair) RlePair {
 	return RlePair{minP.Start, minP.RunLen + maxP.RunLen - (minP.Start + minP.RunLen - maxP.Start)}
 }
 
-//canMerge checks not overlap, but successive sequences for given pairs
+//canMerge checks not overlap, but successive sequence for given pairs
 func (p1 RlePair) canMerge(p2 RlePair) bool {
-	return p2.Start-p1.Start+p1.RunLen == 1 || p1.Start-p2.Start+p2.RunLen == 1
+	return p2.Start-p1.Start+p1.RunLen == 1
 }
 
 //mergeReturn merges two disjoint pairs assuming canMerge holds true
@@ -128,6 +128,9 @@ func (rle *Rles) Add(p RlePair) {
 	}
 	_new_rles = append(_new_rles, rle.RlePairs[i:]...)
 	rle.RlePairs = _new_rles
+
+	//perform compaction
+	rle.compact()
 }
 
 func (rle *Rles) Remove(p RlePair) {
@@ -184,6 +187,22 @@ func (rle *Rles) Remove(p RlePair) {
 	}
 
 	rle.RlePairs = _new_rles
+}
+
+func (rle *Rles) compact() {
+	_rleArr := make([]RlePair, 0)
+	//iterate through the array and each index checks for overlap with previous one (window search)
+	startP := rle.RlePairs[0]
+	for i := 1; i < len(rle.RlePairs); i++ {
+		if startP.canMerge(rle.RlePairs[i]) {
+			startP = startP.mergeReturn(rle.RlePairs[i])
+		} else {
+			_rleArr = append(_rleArr, startP)
+			startP = rle.RlePairs[i]
+		}
+	}
+	_rleArr = append(_rleArr, startP)
+	rle.RlePairs = _rleArr
 }
 
 func (rle *Rles) Union(rle2 *Rles) Rles {

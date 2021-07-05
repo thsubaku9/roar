@@ -21,6 +21,20 @@ func TestBitmapSetOps(t *testing.T) {
 	bitmap_1.Add(15)
 	bitmap_1.Add(16)
 	bitmap_1.Add(31)
+
+	t.Run("Unary function tests", func(t *testing.T) {
+
+		res, err := bitmap_0.Max()
+		assert.Nil(t, err, "Error triggered in Max")
+		assert.Equal(t, uint16(32), res, "Max failed")
+
+		res, err = bitmap_0.Min()
+		assert.Nil(t, err, "Error triggered in Min")
+		assert.Equal(t, uint16(0), res, "Max failed")
+
+		res = bitmap_0.Rank(32)
+		assert.Equal(t, uint16(3), res, "Rank failed")
+	})
 	t.Run("Check Union operation", func(t *testing.T) {
 		res := bitmap_0.Union(&bitmap_1)
 		required_0 := uint32(0b10000000000000011000000000000001)
@@ -50,7 +64,9 @@ func TestBitmapSetOps(t *testing.T) {
 	})
 	t.Run("Check Rles Conversion", func(t *testing.T) {
 		_rles := bitmap_0.Bmps2Rles()
-		//TODO -> implement rle compaction
-		assert.Equal(t, nil, _rles, "Rles Conversion failed")
+		_actualRles := roar.CreateRles()
+		_actualRles.Add(roar.RlePair{0x00, 0x00})
+		_actualRles.Add(roar.RlePair{0x1f, 0x01})
+		assert.Equal(t, _actualRles, _rles, "Rles Conversion failed")
 	})
 }

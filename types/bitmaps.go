@@ -32,12 +32,12 @@ func (bmp *Bitmaps) Remove(elem uint16) {
 }
 
 func (bmp *Bitmaps) Max() (uint16, error) {
-	var shiftPos uint32 = uint32(util.BmpRange - 1)
+	var shiftPos int = util.BmpRange - 1
 	for i := util.BmpsLen - 1; i >= 0; i-- {
 		if bmp.Values[i] != 0 {
-			for ; bmp.Values[i]&0x01<<shiftPos == 0x00 && shiftPos >= 0; shiftPos-- {
+			for ; bmp.Values[i]&(0x01<<shiftPos) == 0x00 && shiftPos >= 0; shiftPos-- {
 			}
-			offset := uint32(32 * i)
+			offset := 32 * i
 			return uint16(offset + shiftPos), nil
 		}
 	}
@@ -48,7 +48,7 @@ func (bmp *Bitmaps) Min() (uint16, error) {
 	var shiftPos uint32 = 0
 	for i := 0; i < util.BmpsLen; i++ {
 		if bmp.Values[i] != 0 {
-			for ; bmp.Values[i]&0x01<<shiftPos == 0x00 && shiftPos < uint32(util.BmpsLen); shiftPos++ {
+			for ; bmp.Values[i]&(0x01<<shiftPos) == 0x00 && shiftPos < uint32(util.BmpsLen); shiftPos++ {
 			}
 			offset := uint32(32 * i)
 			return uint16(offset + shiftPos), nil
@@ -71,7 +71,7 @@ func (bmp *Bitmaps) Select(index uint16) (uint16, error) {
 	for i, v := range bmp.Values {
 		if v != 0 {
 			for j := 0; j < util.BmpRange; j++ {
-				if v&1<<j != 0x00 {
+				if v&(0x01<<j) != 0x00 {
 					if totalElems == index {
 						offset := i * 32
 						return uint16(offset + j), nil
@@ -91,7 +91,7 @@ func (bmp *Bitmaps) Index(elem uint16) (uint16, error) {
 	for i, v := range bmp.Values {
 		if v != 0 {
 			for j := 0; j < util.BmpRange; j++ {
-				if v&1<<j != 0x00 {
+				if v&(0x01<<j) != 0x00 {
 					offset := i * 32
 					if uint16(offset+j) == elem {
 						return totalElems, nil
@@ -105,8 +105,21 @@ func (bmp *Bitmaps) Index(elem uint16) (uint16, error) {
 }
 
 //Rank returns number of elements -le the given number
-func (bmp *Bitmaps) Rank(elem uint16) (uint16, error) {
-	return 0, fmt.Errorf("TODO")
+func (bmp *Bitmaps) Rank(elem uint16) uint16 {
+	var currentCount uint16
+	for i, v := range bmp.Values {
+		if v != 0 {
+			for j := 0; j < util.BmpRange; j++ {
+				if v&(0x01<<j) != 0x00 {
+					if uint16(i*32+j) > elem {
+						return currentCount
+					}
+					currentCount++
+				}
+			}
+		}
+	}
+	return currentCount
 }
 
 func (bmp *Bitmaps) NumElem() uint16 {
@@ -202,14 +215,14 @@ func (bmp *Bitmaps) Bmps2Rles() Rles {
 
 	innerL:
 		for iter < util.BmpRange {
-			for ; (1 << iter & v) == 0; iter++ {
+			for ; v&(1<<iter) == 0; iter++ {
 				if iter >= util.BmpRange {
 					break innerL
 				}
 			}
 
 			_start = iter
-			for ; (1 << iter & v) > 0; iter++ {
+			for ; v&(1<<iter) > 0; iter++ {
 			}
 			_end = iter - 1
 
@@ -217,5 +230,6 @@ func (bmp *Bitmaps) Bmps2Rles() Rles {
 		}
 	}
 	//compact the _rles array
+	_rles.compact()
 	return _rles
 }
