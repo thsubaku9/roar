@@ -31,6 +31,7 @@ func (bmp *Bitmaps) Remove(elem uint16) {
 	bmp.Values[index] &= 0xFFFF ^ (1 << offset)
 }
 
+//Max returns the maximum value of element present in the bitmap (returns error if bitmap is empty)
 func (bmp *Bitmaps) Max() (uint16, error) {
 	var shiftPos int = util.BmpRange - 1
 	for i := util.BmpsLen - 1; i >= 0; i-- {
@@ -44,6 +45,7 @@ func (bmp *Bitmaps) Max() (uint16, error) {
 	return 0, fmt.Errorf("EmptyBitmapError")
 }
 
+//Min returns the minimum value of element present in the bitmap (returns error if bitmap is empty)
 func (bmp *Bitmaps) Min() (uint16, error) {
 	var shiftPos uint32 = 0
 	for i := 0; i < util.BmpsLen; i++ {

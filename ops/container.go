@@ -74,3 +74,9 @@ func (r *RoaringBitmap) Remove(element uint32) {
 	}
 	(*r.subContainers[key]).Remove(val)
 }
+
+/* TODO -> figure out inter sub container conversion criteria.
+
+Sarr -> Bitmaps if (2^16)/16 elements have been inserted
+Sarr -> RLE is 2^16 * 16 vs  2^16 * 32 (criteria needs to be fleshed out)
+*/
