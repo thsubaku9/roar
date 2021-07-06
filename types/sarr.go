@@ -51,7 +51,6 @@ func (ar *Sarr) findIndex(elem uint16, start, end int) (int, error) {
 }
 
 func (ar *Sarr) Add(elem uint16) {
-
 	if len(ar.Arr) == 0 {
 		ar.Arr = append(ar.Arr, elem)
 		return
@@ -64,9 +63,9 @@ func (ar *Sarr) Add(elem uint16) {
 	} else if index, err := ar.findIndex(elem, 0, len(ar.Arr)-1); err != nil {
 		index += 1
 		var newArr []uint16
-		newArr = append(newArr, ar.Arr[0:index]...)
+		newArr = append(newArr, ar.Arr[:index]...)
 		newArr = append(newArr, elem)
-		newArr = append(newArr, ar.Arr[index:len(ar.Arr)]...)
+		newArr = append(newArr, ar.Arr[index:]...)
 		ar.Arr = newArr
 	}
 }
@@ -77,15 +76,60 @@ func (ar *Sarr) Remove(elem uint16) {
 	}
 
 	if elem == ar.Arr[len(ar.Arr)-1] {
-		ar.Arr = ar.Arr[0 : len(ar.Arr)-1]
+		ar.Arr = ar.Arr[:len(ar.Arr)-1]
 	} else if elem == ar.Arr[0] {
-		ar.Arr = ar.Arr[1:len(ar.Arr)]
+		ar.Arr = ar.Arr[1:]
 	} else if index, err := ar.findIndex(elem, 0, len(ar.Arr)-1); err == nil {
 		var newArr []uint16
-		newArr = append(newArr, ar.Arr[0:index]...)
-		newArr = append(newArr, ar.Arr[index+1:len(ar.Arr)]...)
+		newArr = append(newArr, ar.Arr[:index]...)
+		newArr = append(newArr, ar.Arr[index+1:]...)
 		ar.Arr = newArr
 	}
+}
+
+func (ar *Sarr) Max() (uint16, error) {
+	if len(ar.Arr) == 0 {
+		return 0, fmt.Errorf("EmtpySarrError")
+	}
+	return ar.Arr[len(ar.Arr)-1], nil
+}
+
+func (ar *Sarr) Min() (uint16, error) {
+	if len(ar.Arr) == 0 {
+		return 0, fmt.Errorf("EmtpySarrError")
+	}
+	return ar.Arr[0], nil
+}
+
+func (ar *Sarr) NumElem() uint16 {
+	return uint16(len(ar.Arr))
+}
+
+func (ar *Sarr) Pop() (uint16, error) {
+	elem, err := ar.Max()
+	if err != nil {
+		ar.Remove(elem)
+	}
+	return elem, err
+}
+
+//Select returns the element at the i-th index
+func (ar *Sarr) Select(index uint16) (uint16, error) {
+	if index < uint16(len(ar.Arr)) {
+		return ar.Arr[index], nil
+	}
+	return 0, fmt.Errorf("IndexOutOfBounds")
+}
+
+//Index returns the index location of provided element
+func (ar *Sarr) Index(elem uint16) (int, error) {
+	return ar.findIndex(elem, 0, len(ar.Arr)-1)
+}
+
+//Rank returns number of elements -le the given number
+func (ar *Sarr) Rank(elem uint16) uint16 {
+	index, _ := ar.findIndex(elem, 0, len(ar.Arr)-1)
+	return uint16(index + 1)
 }
 
 func (ar *Sarr) Union(ar2 *Sarr) Sarr {
@@ -157,5 +201,6 @@ func (ar *Sarr) Sarr2Rles() Rles {
 	}
 
 	_rle.RlePairs = append(_rle.RlePairs, RlePair{Start: ar.Arr[startPos], RunLen: uint16(endPos - startPos - 1)})
+	_rle.compact()
 	return _rle
 }

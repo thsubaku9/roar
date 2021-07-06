@@ -62,7 +62,9 @@ func (bmp *Bitmaps) Min() (uint16, error) {
 //Pop removes the element with highest value
 func (bmp *Bitmaps) Pop() (uint16, error) {
 	_max, err := bmp.Max()
-	bmp.Remove(_max)
+	if err != nil {
+		bmp.Remove(_max)
+	}
 	return _max, err
 }
 
@@ -87,8 +89,8 @@ func (bmp *Bitmaps) Select(index uint16) (uint16, error) {
 }
 
 //Index returns the index location of provided element
-func (bmp *Bitmaps) Index(elem uint16) (uint16, error) {
-	totalElems := uint16(0)
+func (bmp *Bitmaps) Index(elem uint16) (int, error) {
+	totalElems := 0
 
 	for i, v := range bmp.Values {
 		if v != 0 {

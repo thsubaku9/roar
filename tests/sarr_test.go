@@ -24,6 +24,27 @@ func InsertElemsIntoSarr(t *testing.T) {
 	sarr_1.Add(5)
 	sarr_1.Add(6)
 
+	t.Run("Unary function tests", func(t *testing.T) {
+
+		res, err := sarr_0.Max()
+		assert.Nil(t, err, "Error triggered in Max")
+		assert.Equal(t, uint16(4), res, "Max failed")
+
+		res, err = sarr_0.Min()
+		assert.Nil(t, err, "Error triggered in Min")
+		assert.Equal(t, uint16(0), res, "Max failed")
+
+		res = sarr_0.Rank(32)
+		assert.Equal(t, uint16(3), res, "Rank failed")
+
+		res, err = sarr_0.Select(2)
+		assert.Nil(t, err, "Error - Select failed")
+		assert.Equal(t, uint16(32), res, "Select failed")
+
+		res = sarr_0.NumElem()
+		assert.Equal(t, uint16(5), res, "NumElem failed")
+	})
+
 	t.Run("Check Union operation", func(t *testing.T) {
 		_res := sarr_0.Union(&sarr_1)
 		assert.Equal(t, _res, []uint16{0, 1, 2, 3, 4, 5, 6}, "Sarr Union Failed")

@@ -11,7 +11,7 @@ type Container interface {
 	Debug() string
 	Difference() Container
 	FlipRange(start, stop uint32)
-	Index(element uint32) (uint32, error) //returns the index location of provided element
+	Index(element uint32) (int, error) //returns the index location of provided element
 	Intersection(con Container) (Container, error)
 	IsDisjoint(con Container) bool
 	IsSubset(con Container) bool
@@ -31,7 +31,7 @@ type Container interface {
 type SubContainer interface {
 	Add(element uint16)
 	Difference() SubContainer
-	Index(element uint16) (uint16, error) //returns the index location of provided element
+	Index(element uint16) (int, error) //returns the index location of provided element
 	Intersection(con Container) (Container, error)
 	IsDisjoint(con Container) bool
 	IsSubset(con Container) bool
