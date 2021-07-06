@@ -70,8 +70,8 @@ func TestBitmapSetOps(t *testing.T) {
 	t.Run("Check Rles Conversion", func(t *testing.T) {
 		_rles := bitmap_0.Bmps2Rles()
 		_actualRles := roar.CreateRles()
-		_actualRles.Add(roar.RlePair{0x00, 0x00})
-		_actualRles.Add(roar.RlePair{0x1f, 0x01})
+		_actualRles.Add(roar.RlePair{Start: 0x00, RunLen: 0x00})
+		_actualRles.Add(roar.RlePair{Start: 0x1f, RunLen: 0x01})
 		assert.Equal(t, _actualRles, _rles, "Rles Conversion failed")
 	})
 }

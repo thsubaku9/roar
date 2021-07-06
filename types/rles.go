@@ -1,6 +1,7 @@
 package roar
 
 import (
+	"fmt"
 	"roar/util"
 )
 
@@ -203,6 +204,38 @@ func (rle *Rles) compact() {
 	}
 	_rleArr = append(_rleArr, startP)
 	rle.RlePairs = _rleArr
+}
+
+func (rle *Rles) Max() (uint16, error) {
+	if len(rle.RlePairs) == 0 {
+		return 0, fmt.Errorf("EmtpyRleError")
+	}
+	lastPoint := rle.RlePairs[len(rle.RlePairs)-1].Start + rle.RlePairs[len(rle.RlePairs)-1].RunLen
+	return lastPoint, nil
+}
+
+func (rle *Rles) Min() (uint16, error) {
+	if len(rle.RlePairs) == 0 {
+		return 0, fmt.Errorf("EmtpyRleError")
+	}
+	firstPoint := rle.RlePairs[0].Start
+	return firstPoint, nil
+}
+
+func (rle *Rles) NumElem() uint16 {
+	currentCount := uint16(0)
+	for _, v := range rle.RlePairs {
+		currentCount += v.RunLen + 1
+	}
+	return currentCount
+}
+
+func (rle *Rles) Pop() (uint16, error) {
+	elem, err := rle.Max()
+	if err != nil {
+		rle.Remove(RlePair{Start: elem, RunLen: 0})
+	}
+	return elem, err
 }
 
 func (rle *Rles) Union(rle2 *Rles) Rles {
