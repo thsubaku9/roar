@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var bitmap_0, bitmap_1 roar.Bitmaps
-
 func TestBitmapSetOps(t *testing.T) {
+	var bitmap_0, bitmap_1 roar.Bitmaps
+
 	t.Run("Unary function tests", func(t *testing.T) {
 		bitmap_0 = roar.CreateBitmap()
 		bitmap_0.Add(0)
@@ -33,6 +33,10 @@ func TestBitmapSetOps(t *testing.T) {
 
 		res = bitmap_0.NumElem()
 		assert.Equal(t, uint16(3), res, "NumElem failed")
+
+		res_int, err := bitmap_0.Index(uint16(32))
+		assert.Nil(t, err, "Error - Index failed")
+		assert.Equal(t, 2, res_int, "Index failed")
 
 		res, err = bitmap_0.Pop()
 		assert.Nil(t, err, "Error - Pop failed")

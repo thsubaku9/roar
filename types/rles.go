@@ -190,6 +190,9 @@ func (rle *Rles) Remove(p RlePair) {
 	rle.RlePairs = _new_rles
 }
 
+func (rle *Rles) Compact() {
+	rle.compact()
+}
 func (rle *Rles) compact() {
 	_rleArr := make([]RlePair, 0)
 	//iterate through the array and each index checks for overlap with previous one (window search)
@@ -208,7 +211,7 @@ func (rle *Rles) compact() {
 
 func (rle *Rles) Max() (uint16, error) {
 	if len(rle.RlePairs) == 0 {
-		return 0, fmt.Errorf("EmtpyRleError")
+		return 0, fmt.Errorf("EmptyRleError")
 	}
 	lastPoint := rle.RlePairs[len(rle.RlePairs)-1].Start + rle.RlePairs[len(rle.RlePairs)-1].RunLen
 	return lastPoint, nil
@@ -216,7 +219,7 @@ func (rle *Rles) Max() (uint16, error) {
 
 func (rle *Rles) Min() (uint16, error) {
 	if len(rle.RlePairs) == 0 {
-		return 0, fmt.Errorf("EmtpyRleError")
+		return 0, fmt.Errorf("EmptyRleError")
 	}
 	firstPoint := rle.RlePairs[0].Start
 	return firstPoint, nil
@@ -238,6 +241,49 @@ func (rle *Rles) Pop() (uint16, error) {
 	return elem, err
 }
 
+//Rank returns number of elements -le the given number
+func (rle *Rles) Rank(elem uint16) uint16 {
+	_total := uint16(0)
+	for _, v := range rle.RlePairs {
+		if elem > v.Start+v.RunLen {
+			_total += v.RunLen + 1
+		} else if elem >= v.Start && elem <= v.Start+v.RunLen {
+			_total += elem - v.Start + 1
+		} else {
+			return _total
+		}
+	}
+	return _total
+}
+
+//Select returns the element at the i-th index
+func (rle *Rles) Select(index uint16) (uint16, error) {
+	_indexCount := uint16(0)
+	for _, v := range rle.RlePairs {
+		if _indexCount+v.RunLen+1 < index {
+			_indexCount += v.RunLen + 1
+		} else {
+			return v.Start + index, nil
+		}
+	}
+	return 0, fmt.Errorf("IndexOutOfBounds")
+}
+
+//Index returns the index location of provided element
+func (rle *Rles) Index(elem uint16) (int, error) {
+	_indexCount := uint16(0)
+	for _, v := range rle.RlePairs {
+		if v.Start+v.RunLen < elem {
+			_indexCount += v.RunLen + 1
+		} else if elem >= v.Start && elem <= v.Start+v.RunLen {
+			_indexCount += elem - v.Start
+			return int(_indexCount), nil
+		}
+	}
+	return 0, fmt.Errorf("ElementNotFound")
+}
+
+//TODO -> implement RLE binary operations
 func (rle *Rles) Union(rle2 *Rles) Rles {
 	_rle := CreateRles()
 

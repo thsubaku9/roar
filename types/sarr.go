@@ -2,6 +2,7 @@ package roar
 
 import (
 	"fmt"
+	"log"
 	"roar/util"
 	"sort"
 )
@@ -28,7 +29,7 @@ func CreateSarr(val ...uint16) Sarr {
 //findIndex finds the location after which the given elem should be inserted
 func (ar *Sarr) findIndex(elem uint16, start, end int) (int, error) {
 	if end < start {
-		return -1, fmt.Errorf("array is empty")
+		return -1, fmt.Errorf("EmptyArray")
 	}
 
 	mid := (start + end) / 2
@@ -38,9 +39,9 @@ func (ar *Sarr) findIndex(elem uint16, start, end int) (int, error) {
 			return mid, nil
 		}
 		if ar.Arr[mid] < elem {
-			return mid, fmt.Errorf("value doesn't exist")
+			return mid, fmt.Errorf("ValueNotFound")
 		} else {
-			return mid - 1, fmt.Errorf("value doesn't exist")
+			return mid - 1, fmt.Errorf("ValueNotFound")
 		}
 	}
 	if ar.Arr[mid] < elem {
@@ -165,7 +166,8 @@ func (ar *Sarr) Union(ar2 *Sarr) Sarr {
 func (ar *Sarr) Intersection(ar2 *Sarr) Sarr {
 	_retSarr := Sarr{}
 
-	for i, j := 0, 0; i < len(ar.Arr) && j < len(ar2.Arr); i, j = i+1, j+1 {
+	for i, j := 0, 0; i < len(ar.Arr) && j < len(ar2.Arr); {
+		log.Println(i, j)
 		switch {
 		case ar.Arr[i] < ar2.Arr[j]:
 			i++
