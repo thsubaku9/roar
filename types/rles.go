@@ -42,7 +42,7 @@ func (p1 RlePair) overlapReturn(p2 RlePair) RlePair {
 
 //canMerge checks not overlap, but successive sequence for given pairs
 func (p1 RlePair) canMerge(p2 RlePair) bool {
-	return p2.Start-p1.Start+p1.RunLen == 1
+	return p2.Start-(p1.Start+p1.RunLen) == 1
 }
 
 //mergeReturn merges two disjoint pairs assuming canMerge holds true
@@ -131,6 +131,7 @@ func (rle *Rles) Add(p RlePair) {
 	rle.RlePairs = _new_rles
 
 	//perform compaction
+	//TODO -> might need to run this off a defer
 	rle.compact()
 }
 
@@ -190,9 +191,7 @@ func (rle *Rles) Remove(p RlePair) {
 	rle.RlePairs = _new_rles
 }
 
-func (rle *Rles) Compact() {
-	rle.compact()
-}
+//compact causes rle compaction to take place (memory optimzation)
 func (rle *Rles) compact() {
 	_rleArr := make([]RlePair, 0)
 	//iterate through the array and each index checks for overlap with previous one (window search)
