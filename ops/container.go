@@ -1,6 +1,8 @@
 package roar
 
-import . "roar/util"
+import (
+	. "roar/util"
+)
 
 //Container acts as the top level object from which all interactions are done
 type Container interface {
@@ -30,20 +32,20 @@ type Container interface {
 
 type SubContainer interface {
 	Add(element uint16)
-	Difference() SubContainer
+	Difference(sub SubContainer) SubContainer
 	Index(element uint16) (int, error) //returns the index location of provided element
-	Intersection(con Container) (Container, error)
-	IsDisjoint(con Container) bool
-	IsSubset(con Container) bool
-	IsSuperset(con Container) bool
+	Intersection(sub SubContainer) (SubContainer, error)
+	IsDisjoint(sub SubContainer) bool
+	IsSubset(sub SubContainer) bool
+	IsSuperset(sub SubContainer) bool
 	Max() (uint16, error)
 	Min() (uint16, error)
 	NumElem() uint16
 	Pop() (uint16, error)       //removes the element with highest value
 	Rank(element uint16) uint16 //number of elements -le the given number
 	Remove(element uint16)
-	SymmetricDifference(con Container) Container
-	Union(con Container) (Container, error)
+	SymmetricDifference(sub SubContainer) SubContainer
+	Union(sub SubContainer) (SubContainer, error)
 }
 
 //TODO - sub container conversion will depend on current size of sub container vs alternatives
@@ -80,3 +82,5 @@ func (r *RoaringBitmap) Remove(element uint32) {
 Sarr -> Bitmaps if (2^16)/16 elements have been inserted
 Sarr -> RLE is 2^16 * 16 vs  2^16 * 32 (criteria needs to be fleshed out)
 */
+
+//TODO -> need to add another structure for abstraction since interface method params need to be of type interface and not struct

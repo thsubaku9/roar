@@ -160,7 +160,6 @@ func (bmp *Bitmaps) Difference(bmp2 *Bitmaps) Bitmaps {
 	return _bmp
 }
 
-//{1, 2, 3} - {0, 1} = {0, 2, 3}
 func (bmp *Bitmaps) SymmetricDifference(bmp2 *Bitmaps) Bitmaps {
 	_bmp := CreateBitmap()
 
