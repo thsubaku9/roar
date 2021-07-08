@@ -37,14 +37,14 @@ func TestRleSetOps(t *testing.T) {
 
 		res, err = rle_0.Select(2)
 		assert.Nil(t, err, "Error - Select failed")
-		assert.Equal(t, uint16(32), res, "Select failed")
+		assert.Equal(t, uint16(2), res, "Select failed")
 
 		res = rle_0.NumElem()
-		assert.Equal(t, uint16(3), res, "NumElem failed")
+		assert.Equal(t, uint16(8), res, "NumElem failed")
 
 		res, err = rle_0.Pop()
 		assert.Nil(t, err, "Error - Pop failed")
-		assert.Equal(t, uint16(32), res, "Select failed")
+		assert.Equal(t, uint16(7), res, "Pop failed")
 
 	})
 

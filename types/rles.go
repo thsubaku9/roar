@@ -73,6 +73,9 @@ func (p1 RlePair) splitReturn(p2 RlePair) (*RlePair, *RlePair) {
 }
 
 func (rle *Rles) Add(p RlePair) {
+	//perform compaction
+	defer rle.compact()
+
 	if len(rle.RlePairs) == 0 || p.Start > rle.RlePairs[len(rle.RlePairs)-1].Start+rle.RlePairs[len(rle.RlePairs)-1].RunLen {
 		rle.RlePairs = append(rle.RlePairs, p)
 		return
@@ -129,10 +132,6 @@ func (rle *Rles) Add(p RlePair) {
 	}
 	_new_rles = append(_new_rles, rle.RlePairs[i:]...)
 	rle.RlePairs = _new_rles
-
-	//perform compaction
-	//TODO -> might need to run this off a defer
-	rle.compact()
 }
 
 func (rle *Rles) Remove(p RlePair) {
@@ -159,7 +158,13 @@ func (rle *Rles) Remove(p RlePair) {
 		return
 	case rle.RlePairs[i].isSubSegment(p):
 		before, after := rle.RlePairs[i].splitReturn(p)
-		_new_rles = append(_new_rles, *before, *after)
+		if before != nil {
+			_new_rles = append(_new_rles, *before)
+		}
+		if after != nil {
+			_new_rles = append(_new_rles, *after)
+		}
+
 		_new_rles = append(_new_rles, rle.RlePairs[i+1:]...)
 		rle.RlePairs = _new_rles
 		return
