@@ -164,7 +164,6 @@ func (rle *Rles) Remove(p RlePair) {
 		if after != nil {
 			_new_rles = append(_new_rles, *after)
 		}
-
 		_new_rles = append(_new_rles, rle.RlePairs[i+1:]...)
 		rle.RlePairs = _new_rles
 		return
@@ -290,12 +289,53 @@ func (rle *Rles) Index(elem uint16) (int, error) {
 //TODO -> implement RLE binary operations
 func (rle *Rles) Union(rle2 *Rles) Rles {
 	_rle := CreateRles()
+	var i, j int
+
+	for i < len(rle.RlePairs) && j < len(rle2.RlePairs) {
+		if rle.RlePairs[i].Start+rle.RlePairs[i].RunLen < rle2.RlePairs[j].Start {
+			_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[i])
+			i++
+		} else if rle2.RlePairs[j].Start+rle2.RlePairs[j].RunLen < rle.RlePairs[i].Start {
+			_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[j])
+			j++
+		} else {
+			if rle.RlePairs[i].isSubSegment(rle2.RlePairs[j]) {
+				_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[i])
+			} else if rle2.RlePairs[j].isSubSegment(rle.RlePairs[i]) {
+				_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[j])
+			} else {
+				var _overlap RlePair
+				if rle.RlePairs[i].lSideOverlap(rle2.RlePairs[j]) {
+					_overlap = rle.RlePairs[i].overlapReturn(rle2.RlePairs[j])
+				} else {
+					_overlap = rle2.RlePairs[j].overlapReturn(rle.RlePairs[i])
+				}
+				_rle.RlePairs = append(_rle.RlePairs, _overlap)
+			}
+			i++
+			j++
+		}
+	}
+
+	_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[i:]...)
+	_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[j:]...)
 
 	return _rle
 }
 
 func (rle *Rles) Intersection(rle2 *Rles) Rles {
 	_rle := CreateRles()
+	var i, j int
+
+	for i < len(rle.RlePairs) && j < len(rle2.RlePairs) {
+		if rle.RlePairs[i].Start+rle.RlePairs[i].RunLen < rle.RlePairs[j].Start {
+			i++
+		} else if rle.RlePairs[j].Start+rle.RlePairs[j].RunLen < rle.RlePairs[i].Start {
+			j++
+		} else {
+			// check common ground
+		}
+	}
 
 	return _rle
 }

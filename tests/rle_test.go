@@ -62,9 +62,26 @@ func TestRleSetOps(t *testing.T) {
 	})
 
 	t.Run("Check Sarr Conversion", func(t *testing.T) {
+		rle_0 = roar.CreateRles()
 
+		rle_0.Add(roar.RlePair{Start: 0, RunLen: 1})
+		rle_0.Add(roar.RlePair{Start: 3, RunLen: 4})
+		rle_0.Add(roar.RlePair{Start: 10, RunLen: 2})
+
+		_sarr := rle_0.Rles2Sarr()
+
+		assert.Equal(t, []uint16{0, 1, 3, 4, 5, 6, 7, 10, 11, 12}, _sarr.Arr, "Sarr conversion failed")
 	})
 	t.Run("Check Rles Conversion", func(t *testing.T) {
+		rle_0 = roar.CreateRles()
 
+		rle_0.Add(roar.RlePair{Start: 0, RunLen: 1})
+		rle_0.Add(roar.RlePair{Start: 3, RunLen: 4})
+		rle_0.Add(roar.RlePair{Start: 10, RunLen: 2})
+
+		_bmps := rle_0.Rles2Bmps()
+		_sarr := rle_0.Rles2Sarr()
+		_reqBmps := _sarr.Sarr2Bmps()
+		assert.Equal(t, _reqBmps.Values[0], _bmps.Values[0], "Bmps conversion failed")
 	})
 }
