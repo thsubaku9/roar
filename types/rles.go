@@ -296,13 +296,13 @@ func (rle *Rles) Union(rle2 *Rles) Rles {
 			_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[i])
 			i++
 		} else if rle2.RlePairs[j].Start+rle2.RlePairs[j].RunLen < rle.RlePairs[i].Start {
-			_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[j])
+			_rle.RlePairs = append(_rle.RlePairs, rle2.RlePairs[j])
 			j++
 		} else {
 			if rle.RlePairs[i].isSubSegment(rle2.RlePairs[j]) {
 				_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[i])
 			} else if rle2.RlePairs[j].isSubSegment(rle.RlePairs[i]) {
-				_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[j])
+				_rle.RlePairs = append(_rle.RlePairs, rle2.RlePairs[j])
 			} else {
 				var _overlap RlePair
 				if rle.RlePairs[i].lSideOverlap(rle2.RlePairs[j]) {
@@ -318,7 +318,7 @@ func (rle *Rles) Union(rle2 *Rles) Rles {
 	}
 
 	_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[i:]...)
-	_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[j:]...)
+	_rle.RlePairs = append(_rle.RlePairs, rle2.RlePairs[j:]...)
 
 	return _rle
 }

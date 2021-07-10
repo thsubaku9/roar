@@ -2,7 +2,6 @@ package roar
 
 import (
 	"fmt"
-	"log"
 	"roar/util"
 	"sort"
 )
@@ -167,7 +166,6 @@ func (ar *Sarr) Intersection(ar2 *Sarr) Sarr {
 	_retSarr := Sarr{}
 
 	for i, j := 0, 0; i < len(ar.Arr) && j < len(ar2.Arr); {
-		log.Println(i, j)
 		switch {
 		case ar.Arr[i] < ar2.Arr[j]:
 			i++
@@ -193,6 +191,10 @@ func (ar *Sarr) Sarr2Bmps() Bitmaps {
 
 func (ar *Sarr) Sarr2Rles() Rles {
 	_rle := CreateRles()
+
+	if len(ar.Arr) == 0 {
+		return _rle
+	}
 
 	var startPos, endPos int
 	for endPos = 1; endPos <= len(ar.Arr)-1; endPos++ {

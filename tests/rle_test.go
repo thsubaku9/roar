@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var rle_0 roar.Rles
+var rle_0, rle_1 roar.Rles
 
 func TestRleSetOps(t *testing.T) {
 	var rle_0 roar.Rles
@@ -49,7 +49,29 @@ func TestRleSetOps(t *testing.T) {
 	})
 
 	t.Run("Check Union operation", func(t *testing.T) {
+		rle_0 = roar.CreateRles()
+		rle_1 = roar.CreateRles()
 
+		//(10,25),(30,50),(80,100)
+		rle_0.Add(roar.RlePair{Start: 10, RunLen: 15})
+		rle_0.Add(roar.RlePair{Start: 30, RunLen: 20})
+		rle_0.Add(roar.RlePair{Start: 80, RunLen: 20})
+
+		//(5,8),(30,50),(60,70),(75,85),(105,115)
+		rle_1.Add(roar.RlePair{Start: 5, RunLen: 3})
+		rle_1.Add(roar.RlePair{Start: 30, RunLen: 20})
+		rle_1.Add(roar.RlePair{Start: 60, RunLen: 10})
+		rle_1.Add(roar.RlePair{Start: 75, RunLen: 10})
+		rle_1.Add(roar.RlePair{Start: 105, RunLen: 10})
+
+		res := rle_0.Union(&rle_1)
+
+		expected := roar.CreateRles()
+
+		for _, v := range []roar.RlePair{{5, 3}, {10, 15}, {30, 20}, {60, 10}, {75, 25}, {105, 10}} {
+			expected.Add(v)
+		}
+		assert.Equal(t, expected.RlePairs, res.RlePairs, "Union failed")
 	})
 	t.Run("Check Intersection operation", func(t *testing.T) {
 
