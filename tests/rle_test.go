@@ -74,7 +74,27 @@ func TestRleSetOps(t *testing.T) {
 		assert.Equal(t, expected.RlePairs, res.RlePairs, "Union failed")
 	})
 	t.Run("Check Intersection operation", func(t *testing.T) {
+		rle_0 = roar.CreateRles()
+		rle_1 = roar.CreateRles()
 
+		rle_0.Add(roar.RlePair{Start: 10, RunLen: 15})
+		rle_0.Add(roar.RlePair{Start: 30, RunLen: 20})
+		rle_0.Add(roar.RlePair{Start: 80, RunLen: 20})
+
+		rle_1.Add(roar.RlePair{Start: 5, RunLen: 3})
+		rle_1.Add(roar.RlePair{Start: 31, RunLen: 1})
+		rle_1.Add(roar.RlePair{Start: 35, RunLen: 2})
+		rle_1.Add(roar.RlePair{Start: 60, RunLen: 10})
+		rle_1.Add(roar.RlePair{Start: 75, RunLen: 10})
+		rle_1.Add(roar.RlePair{Start: 105, RunLen: 10})
+
+		res := rle_0.Intersection(&rle_1)
+		expected := roar.CreateRles()
+
+		for _, v := range []roar.RlePair{{Start: 31, RunLen: 1}, {Start: 35, RunLen: 2}, {Start: 75, RunLen: 10}} {
+			expected.Add(v)
+		}
+		assert.Equal(t, expected.RlePairs, res.RlePairs, "Intersection failed")
 	})
 	t.Run("Check SymmetricDifference", func(t *testing.T) {
 

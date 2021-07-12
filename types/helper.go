@@ -79,3 +79,17 @@ func SarrVsRles(sarr Sarr) string {
 	}
 	return "sarr"
 }
+
+func Min(a, b uint16) uint16 {
+	if a > b {
+		return b
+	}
+	return a
+}
+
+func Max(a, b uint16) uint16 {
+	if b > a {
+		return b
+	}
+	return a
+}

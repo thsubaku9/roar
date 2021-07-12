@@ -32,12 +32,17 @@ func (p1 RlePair) isSubSegment(p2 RlePair) bool {
 
 //overlapReturn assumes the two pairs do overlap and combines them
 func (p1 RlePair) overlapReturn(p2 RlePair) RlePair {
-	var minP, maxP RlePair = p1, p2
-	if p1.Start > p2.Start {
-		minP = p2
-		maxP = p1
-	}
-	return RlePair{minP.Start, minP.RunLen + maxP.RunLen - (minP.Start + minP.RunLen - maxP.Start)}
+	startP := Min(p1.Start, p2.Start)
+	endP := Max(p1.Start+p1.RunLen, p2.Start+p2.RunLen)
+
+	return RlePair{Start: startP, RunLen: endP - startP}
+}
+
+//intersectReturn assumes the two pairs overlap and provides intersection
+func (p1 RlePair) intersectReturn(p2 RlePair) RlePair {
+	startP := Min(p1.Start, p2.Start)
+	endP := Min(p1.Start+p1.RunLen, p2.Start+p2.RunLen)
+	return RlePair{Start: startP, RunLen: endP - startP}
 }
 
 //canMerge checks not overlap, but successive sequence for given pairs
@@ -341,8 +346,9 @@ func (rle *Rles) Intersection(rle2 *Rles) Rles {
 				i++
 			} else {
 				if rle.RlePairs[i].lSideOverlap(rle2.RlePairs[j]) {
-					//TODO find common ground
+					_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[i].intersectReturn(rle2.RlePairs[j]))
 				} else {
+					_rle.RlePairs = append(_rle.RlePairs, rle2.RlePairs[j].intersectReturn(rle.RlePairs[i]))
 					//TODO find common ground
 				}
 				i++
