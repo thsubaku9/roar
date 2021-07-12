@@ -300,9 +300,9 @@ func (rle *Rles) Union(rle2 *Rles) Rles {
 			j++
 		} else {
 			if rle.RlePairs[i].isSubSegment(rle2.RlePairs[j]) {
-				_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[i])
+				j++
 			} else if rle2.RlePairs[j].isSubSegment(rle.RlePairs[i]) {
-				_rle.RlePairs = append(_rle.RlePairs, rle2.RlePairs[j])
+				i++
 			} else {
 				var _overlap RlePair
 				if rle.RlePairs[i].lSideOverlap(rle2.RlePairs[j]) {
@@ -311,9 +311,9 @@ func (rle *Rles) Union(rle2 *Rles) Rles {
 					_overlap = rle2.RlePairs[j].overlapReturn(rle.RlePairs[i])
 				}
 				_rle.RlePairs = append(_rle.RlePairs, _overlap)
+				i++
+				j++
 			}
-			i++
-			j++
 		}
 	}
 
@@ -328,12 +328,26 @@ func (rle *Rles) Intersection(rle2 *Rles) Rles {
 	var i, j int
 
 	for i < len(rle.RlePairs) && j < len(rle2.RlePairs) {
-		if rle.RlePairs[i].Start+rle.RlePairs[i].RunLen < rle.RlePairs[j].Start {
+		if rle.RlePairs[i].Start+rle.RlePairs[i].RunLen < rle2.RlePairs[j].Start {
 			i++
-		} else if rle.RlePairs[j].Start+rle.RlePairs[j].RunLen < rle.RlePairs[i].Start {
+		} else if rle2.RlePairs[j].Start+rle2.RlePairs[j].RunLen < rle.RlePairs[i].Start {
 			j++
 		} else {
-			// check common ground
+			if rle.RlePairs[i].isSubSegment(rle2.RlePairs[j]) {
+				_rle.RlePairs = append(_rle.RlePairs, rle2.RlePairs[j])
+				j++
+			} else if rle2.RlePairs[j].isSubSegment(rle.RlePairs[i]) {
+				_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[i])
+				i++
+			} else {
+				if rle.RlePairs[i].lSideOverlap(rle2.RlePairs[j]) {
+					//TODO find common ground
+				} else {
+					//TODO find common ground
+				}
+				i++
+				j++
+			}
 		}
 	}
 
