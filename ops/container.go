@@ -1,8 +1,8 @@
 package roar
 
-import (
-	. "roar/util"
-)
+// import (
+// 	. "roar/util"
+// )
 
 //Container acts as the top level object from which all interactions are done
 type Container interface {
@@ -30,36 +30,21 @@ type Container interface {
 	Union(con Container) (Container, error)
 }
 
-type SubContainer interface {
-	Add(element uint16)
-	Difference(sub SubContainer) SubContainer
-	Index(element uint16) (int, error) //returns the index location of provided element
-	Intersection(sub SubContainer) (SubContainer, error)
-	IsDisjoint(sub SubContainer) bool
-	IsSubset(sub SubContainer) bool
-	IsSuperset(sub SubContainer) bool
-	Max() (uint16, error)
-	Min() (uint16, error)
-	NumElem() uint16
-	Pop() (uint16, error)       //removes the element with highest value
-	Rank(element uint16) uint16 //number of elements -le the given number
-	Remove(element uint16)
-	SymmetricDifference(sub SubContainer) SubContainer
-	Union(sub SubContainer) (SubContainer, error)
-}
-
 //TODO - sub container conversion will depend on current size of sub container vs alternatives
-type RoaringBitmap struct {
+type container struct {
 	subContainers []*SubContainer
 	numElem       uint32
 }
 
-//Roar returns a new RoaringBitmap
-func Roar(values ...uint32) RoaringBitmap {
-	return RoaringBitmap{subContainers: make([]*SubContainer, 16), numElem: 0}
+/*
+//Roar returns a new RoaringBitmap (Container)
+func Roar(values ...uint32) Container {
+	res := container{subContainers: make([]*SubContainer, 16), numElem: 0}
+
+	return &res
 }
 
-func (r *RoaringBitmap) Add(element uint32) {
+func (r *container) Add(element uint32) {
 	key, val := int(element/SplitVal), uint16(element%SplitVal)
 	if r.subContainers[key] == nil {
 		// set a default container type
@@ -68,7 +53,31 @@ func (r *RoaringBitmap) Add(element uint32) {
 	(*r.subContainers[key]).Add(val)
 }
 
-func (r *RoaringBitmap) Remove(element uint32) {
+func (r *container) Clamp(start, stop uint32) {
+
+}
+
+func (r *container) Clear() {
+	r = &container{subContainers: make([]*SubContainer, 16), numElem: 0}
+}
+
+func (r *container) Debug() string {
+	return fmt.Sprintf("Containers - %v, NumElem - %v", r.subContainers, r.numElem)
+}
+
+func (r *container) Copy() Container {
+	_r := &container{subContainers: make([]*SubContainer, 16), numElem: r.numElem}
+
+	for i, v := range r.subContainers {
+		if v != nil {
+			//TODO -> exact copy based on underlying implementation
+		}
+	}
+
+	return _r
+}
+
+func (r *container) Remove(element uint32) {
 	key, val := int(element/SplitVal), uint16(element%SplitVal)
 	if r.subContainers[key] == nil {
 		// set a default container type
@@ -77,10 +86,6 @@ func (r *RoaringBitmap) Remove(element uint32) {
 	(*r.subContainers[key]).Remove(val)
 }
 
-/* TODO -> figure out inter sub container conversion criteria.
-
-Sarr -> Bitmaps if (2^16)/16 elements have been inserted
-Sarr -> RLE is 2^16 * 16 vs  2^16 * 32 (criteria needs to be fleshed out)
-*/
-
 //TODO -> need to add another structure for abstraction since interface method params need to be of type interface and not struct
+
+*/

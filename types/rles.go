@@ -349,7 +349,6 @@ func (rle *Rles) Intersection(rle2 *Rles) Rles {
 					_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[i].intersectReturn(rle2.RlePairs[j]))
 				} else {
 					_rle.RlePairs = append(_rle.RlePairs, rle2.RlePairs[j].intersectReturn(rle.RlePairs[i]))
-					//TODO find common ground
 				}
 				i++
 				j++

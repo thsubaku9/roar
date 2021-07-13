@@ -7,7 +7,7 @@ import (
 )
 
 //memory usage bench
-// go test -bench  BenchmarkMemConsumption -run -
+// go test -bench  BenchmarkMemConsumption
 func BenchmarkMemConsumption(b *testing.B) {
 	b.StopTimer()
 	sarr_0 := roar.CreateSarr()
@@ -27,8 +27,7 @@ func BenchmarkMemConsumption(b *testing.B) {
 //speed bench
 //binary operations
 //merging 2 large Roars
-// go test -bench BenchmarkMergeSarr -run -
-func BenchmarkMergeSarr(b *testing.B) {
+func BenchmarkUnionSarr(b *testing.B) {
 	b.StopTimer()
 	sarr_0 := roar.CreateSarr()
 	N := uint16(1e3)
@@ -38,6 +37,24 @@ func BenchmarkMergeSarr(b *testing.B) {
 
 	sarr_1 := roar.CreateSarr()
 	for i := N; i < 2*N; i++ {
+		sarr_1.Add(i)
+	}
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		sarr_0.Union(&sarr_1)
+	}
+}
+
+func BenchmarkIntersectSarr(b *testing.B) {
+	b.StopTimer()
+	sarr_0 := roar.CreateSarr()
+	N := uint16(1e3)
+	for i := uint16(0); i < N; i++ {
+		sarr_0.Add(i)
+	}
+
+	sarr_1 := roar.CreateSarr()
+	for i := uint16(0); i < 2*N; i += 2 {
 		sarr_1.Add(i)
 	}
 	b.StartTimer()
