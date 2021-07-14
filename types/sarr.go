@@ -189,7 +189,7 @@ func (ar *Sarr) Difference(sub *Sarr) Sarr {
 		if ar.Arr[i] < sub.Arr[j] {
 			_sarr.Arr = append(_sarr.Arr, ar.Arr[i])
 			i++
-		} else if ar.Arr[i] > ar.Arr[j] {
+		} else if ar.Arr[i] > sub.Arr[j] {
 			j++
 		} else {
 			i++
@@ -206,7 +206,7 @@ func (ar *Sarr) IsDisjoint(sub *Sarr) bool {
 	for i, j = 0, 0; i < len(ar.Arr) && j < len(sub.Arr); {
 		if ar.Arr[i] < sub.Arr[j] {
 			i++
-		} else if ar.Arr[i] > ar.Arr[j] {
+		} else if ar.Arr[i] > sub.Arr[j] {
 			j++
 		} else {
 			return false
@@ -217,7 +217,20 @@ func (ar *Sarr) IsDisjoint(sub *Sarr) bool {
 }
 
 func (ar *Sarr) IsSubset(ar2 *Sarr) bool {
+	var i, j int
 
+	for i, j = 0, 0; i < len(ar.Arr) && j < len(ar2.Arr); {
+		if ar.Arr[i] < ar2.Arr[j] {
+			i++
+		} else if ar.Arr[i] > ar2.Arr[j] {
+			return false
+		} else {
+			i++
+			j++
+		}
+	}
+
+	return j == len(ar2.Arr)
 }
 
 func (ar *Sarr) IsSuperset(ar2 *Sarr) bool {
@@ -226,6 +239,20 @@ func (ar *Sarr) IsSuperset(ar2 *Sarr) bool {
 
 func (ar *Sarr) SymmetricDifference(sub *Sarr) Sarr {
 	_sarr := CreateSarr()
+	var i, j int
+
+	for i, j = 0, 0; i < len(ar.Arr) && j < len(sub.Arr); {
+		if ar.Arr[i] < sub.Arr[j] {
+			_sarr.Arr = append(_sarr.Arr, ar.Arr[i])
+			i++
+		} else if ar.Arr[i] > sub.Arr[j] {
+			_sarr.Arr = append(_sarr.Arr, sub.Arr[j])
+			j++
+		} else {
+			i++
+			j++
+		}
+	}
 
 	return _sarr
 }
