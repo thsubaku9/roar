@@ -181,6 +181,55 @@ func (ar *Sarr) Intersection(ar2 *Sarr) Sarr {
 	return _retSarr
 }
 
+func (ar *Sarr) Difference(sub *Sarr) Sarr {
+	_sarr := CreateSarr()
+	var i, j int
+
+	for i, j = 0, 0; i < len(ar.Arr) && j < len(sub.Arr); {
+		if ar.Arr[i] < sub.Arr[j] {
+			_sarr.Arr = append(_sarr.Arr, ar.Arr[i])
+			i++
+		} else if ar.Arr[i] > ar.Arr[j] {
+			j++
+		} else {
+			i++
+			j++
+		}
+	}
+
+	return _sarr
+}
+
+func (ar *Sarr) IsDisjoint(sub *Sarr) bool {
+	var i, j int
+
+	for i, j = 0, 0; i < len(ar.Arr) && j < len(sub.Arr); {
+		if ar.Arr[i] < sub.Arr[j] {
+			i++
+		} else if ar.Arr[i] > ar.Arr[j] {
+			j++
+		} else {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (ar *Sarr) IsSubset(ar2 *Sarr) bool {
+
+}
+
+func (ar *Sarr) IsSuperset(ar2 *Sarr) bool {
+	return ar2.IsSubset(ar)
+}
+
+func (ar *Sarr) SymmetricDifference(sub *Sarr) Sarr {
+	_sarr := CreateSarr()
+
+	return _sarr
+}
+
 func (ar *Sarr) Sarr2Bmps() Bitmaps {
 	_bmp := CreateBitmap()
 	for _, v := range ar.Arr {

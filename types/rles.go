@@ -359,6 +359,30 @@ func (rle *Rles) Intersection(rle2 *Rles) Rles {
 	return _rle
 }
 
+func (rle *Rles) Difference(sub *Rles) Rles {
+	_rle := CreateRles()
+
+	return _rle
+}
+
+func (rle *Rles) IsDisjoint(sub *Rles) bool {
+	return false
+}
+
+func (rle *Rles) IsSubset(sub *Rles) bool {
+	return false
+}
+
+func (rle *Rles) IsSuperset(sub *Rles) bool {
+	return false
+}
+
+func (rle *Rles) SymmetricDifference(sub *Rles) Rles {
+	_rle := CreateRles()
+
+	return _rle
+}
+
 func (rle *Rles) Rles2Sarr() Sarr {
 	_sarr := CreateSarr()
 	var _arr []uint16
