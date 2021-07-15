@@ -18,14 +18,17 @@ func CreateRles() Rles {
 	return Rles{make([]RlePair, 0), util.Rles}
 }
 
+// tells if p2 is left overlap wrt p1
 func (p1 RlePair) lSideOverlap(p2 RlePair) bool {
 	return (p2.Start+p2.RunLen >= p1.Start) && p2.Start+p2.RunLen <= p1.Start+p1.RunLen && p2.Start < p1.Start
 }
 
+// tells if p2 is right overlap wrt p1
 func (p1 RlePair) rSideOverlap(p2 RlePair) bool {
 	return (p2.Start >= p1.Start) && (p2.Start <= p1.Start+p1.RunLen) && p2.Start+p2.RunLen > p1.Start+p1.RunLen
 }
 
+//tells if p2 a subsegment of p1
 func (p1 RlePair) isSubSegment(p2 RlePair) bool {
 	return p1.Start <= p2.Start && p1.Start+p1.RunLen >= p2.Start+p2.RunLen
 }
@@ -40,7 +43,7 @@ func (p1 RlePair) overlapReturn(p2 RlePair) RlePair {
 
 //intersectReturn assumes the two pairs overlap and provides intersection
 func (p1 RlePair) intersectReturn(p2 RlePair) RlePair {
-	startP := Min(p1.Start, p2.Start)
+	startP := Max(p1.Start, p2.Start)
 	endP := Min(p1.Start+p1.RunLen, p2.Start+p2.RunLen)
 	return RlePair{Start: startP, RunLen: endP - startP}
 }
@@ -361,12 +364,49 @@ func (rle *Rles) Intersection(rle2 *Rles) Rles {
 
 func (rle *Rles) Difference(sub *Rles) Rles {
 	_rle := CreateRles()
+	var i, j int
 
+	for i < len(rle.RlePairs) && j < len(sub.RlePairs) {
+
+		if rle.RlePairs[i].Start+rle.RlePairs[i].RunLen < sub.RlePairs[j].Start {
+			_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[i])
+			i++
+		} else if sub.RlePairs[j].Start+sub.RlePairs[j].RunLen < rle.RlePairs[i].Start {
+			j++
+		} else if rle.RlePairs[i].isSubSegment(sub.RlePairs[j]) {
+			lSide, rSide := rle.RlePairs[i].splitReturn(sub.RlePairs[j])
+			j++
+			if lSide != nil {
+				_rle.RlePairs = append(_rle.RlePairs, *lSide)
+			}
+			if rSide != nil {
+				for ; j < len(sub.RlePairs) && rSide.isSubSegment(sub.RlePairs[j]); j++ {
+					lSide, rSide = rSide.splitReturn(sub.RlePairs[j])
+					if lSide != nil {
+						_rle.RlePairs = append(_rle.RlePairs, *lSide)
+					}
+				}
+			}
+		} else if rle.RlePairs[i].lSideOverlap(sub.RlePairs[j]) {
+			_, rSide := rle.RlePairs[i].splitReturn(sub.RlePairs[j])
+			_rle.RlePairs = append(_rle.RlePairs, *rSide)
+			i++
+			j++
+		} else if rle.RlePairs[i].rSideOverlap(sub.RlePairs[j]) {
+			lSide, _ := rle.RlePairs[i].splitReturn(sub.RlePairs[j])
+			_rle.RlePairs = append(_rle.RlePairs, *lSide)
+			i++
+			j++
+		} else { // rle.RlePairs[i] is a subsegment of sub.RlePairs[j]
+			i++
+		}
+	}
 	return _rle
 }
 
 func (rle *Rles) IsDisjoint(sub *Rles) bool {
-	return false
+	_rle := rle.Intersection(sub)
+	return len(_rle.RlePairs) == 0
 }
 
 func (rle *Rles) IsSubset(sub *Rles) bool {
@@ -374,7 +414,7 @@ func (rle *Rles) IsSubset(sub *Rles) bool {
 }
 
 func (rle *Rles) IsSuperset(sub *Rles) bool {
-	return false
+	return sub.IsSubset(rle)
 }
 
 func (rle *Rles) SymmetricDifference(sub *Rles) Rles {

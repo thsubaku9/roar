@@ -91,7 +91,7 @@ func TestRleSetOps(t *testing.T) {
 		res := rle_0.Intersection(&rle_1)
 		expected := roar.CreateRles()
 
-		for _, v := range []roar.RlePair{{Start: 31, RunLen: 1}, {Start: 35, RunLen: 2}, {Start: 75, RunLen: 10}} {
+		for _, v := range []roar.RlePair{{Start: 31, RunLen: 1}, {Start: 35, RunLen: 2}, {Start: 80, RunLen: 5}} {
 			expected.Add(v)
 		}
 		assert.Equal(t, expected.RlePairs, res.RlePairs, "Intersection failed")
