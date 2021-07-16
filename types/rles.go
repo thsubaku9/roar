@@ -18,6 +18,8 @@ func CreateRles() Rles {
 	return Rles{make([]RlePair, 0), util.Rles}
 }
 
+//!HELPER FUNCS
+
 // tells if p2 is left overlap wrt p1
 func (p1 RlePair) lSideOverlap(p2 RlePair) bool {
 	return (p2.Start+p2.RunLen >= p1.Start) && p2.Start+p2.RunLen <= p1.Start+p1.RunLen && p2.Start < p1.Start
@@ -78,6 +80,23 @@ func (p1 RlePair) splitReturn(p2 RlePair) (*RlePair, *RlePair) {
 	}
 	// code won't reach here
 	return nil, nil
+}
+
+//compact causes rle compaction to take place (memory optimzation)
+func (rle *Rles) compact() {
+	_rleArr := make([]RlePair, 0)
+	//iterate through the array and each index checks for overlap with previous one (window search)
+	startP := rle.RlePairs[0]
+	for i := 1; i < len(rle.RlePairs); i++ {
+		if startP.canMerge(rle.RlePairs[i]) {
+			startP = startP.mergeReturn(rle.RlePairs[i])
+		} else {
+			_rleArr = append(_rleArr, startP)
+			startP = rle.RlePairs[i]
+		}
+	}
+	_rleArr = append(_rleArr, startP)
+	rle.RlePairs = _rleArr
 }
 
 func (rle *Rles) Add(p RlePair) {
@@ -203,23 +222,6 @@ func (rle *Rles) Remove(p RlePair) {
 	rle.RlePairs = _new_rles
 }
 
-//compact causes rle compaction to take place (memory optimzation)
-func (rle *Rles) compact() {
-	_rleArr := make([]RlePair, 0)
-	//iterate through the array and each index checks for overlap with previous one (window search)
-	startP := rle.RlePairs[0]
-	for i := 1; i < len(rle.RlePairs); i++ {
-		if startP.canMerge(rle.RlePairs[i]) {
-			startP = startP.mergeReturn(rle.RlePairs[i])
-		} else {
-			_rleArr = append(_rleArr, startP)
-			startP = rle.RlePairs[i]
-		}
-	}
-	_rleArr = append(_rleArr, startP)
-	rle.RlePairs = _rleArr
-}
-
 func (rle *Rles) Max() (uint16, error) {
 	if len(rle.RlePairs) == 0 {
 		return 0, fmt.Errorf("EmptyRleError")
@@ -294,7 +296,6 @@ func (rle *Rles) Index(elem uint16) (int, error) {
 	return 0, fmt.Errorf("ElementNotFound")
 }
 
-//TODO -> implement RLE binary operations
 func (rle *Rles) Union(rle2 *Rles) Rles {
 	_rle := CreateRles()
 	var i, j int
@@ -379,26 +380,25 @@ func (rle *Rles) Difference(sub *Rles) Rles {
 			if lSide != nil {
 				_rle.RlePairs = append(_rle.RlePairs, *lSide)
 			}
-			if rSide != nil {
-				for ; j < len(sub.RlePairs) && rSide.isSubSegment(sub.RlePairs[j]); j++ {
-					lSide, rSide = rSide.splitReturn(sub.RlePairs[j])
-					if lSide != nil {
-						_rle.RlePairs = append(_rle.RlePairs, *lSide)
-					}
+			//subsequent sub.RlePairs might be subsegment of rSide
+			for ; j < len(sub.RlePairs) && rSide != nil && rSide.isSubSegment(sub.RlePairs[j]); j++ {
+				lSide, rSide = rSide.splitReturn(sub.RlePairs[j])
+				if lSide != nil {
+					_rle.RlePairs = append(_rle.RlePairs, *lSide)
 				}
 			}
+		} else if sub.RlePairs[j].isSubSegment(rle.RlePairs[i]) {
+			i++
 		} else if rle.RlePairs[i].lSideOverlap(sub.RlePairs[j]) {
 			_, rSide := rle.RlePairs[i].splitReturn(sub.RlePairs[j])
 			_rle.RlePairs = append(_rle.RlePairs, *rSide)
 			i++
 			j++
-		} else if rle.RlePairs[i].rSideOverlap(sub.RlePairs[j]) {
+		} else { //rle.RlePairs[i].rSideOverlap(sub.RlePairs[j])
 			lSide, _ := rle.RlePairs[i].splitReturn(sub.RlePairs[j])
 			_rle.RlePairs = append(_rle.RlePairs, *lSide)
 			i++
 			j++
-		} else { // rle.RlePairs[i] is a subsegment of sub.RlePairs[j]
-			i++
 		}
 	}
 	return _rle
@@ -410,7 +410,20 @@ func (rle *Rles) IsDisjoint(sub *Rles) bool {
 }
 
 func (rle *Rles) IsSubset(sub *Rles) bool {
-	return false
+
+	for i, j := 0, 0; i < len(rle.RlePairs) && j < len(sub.RlePairs); {
+		switch {
+		case rle.RlePairs[i].Start+rle.RlePairs[i].RunLen < sub.RlePairs[j].Start:
+			i++
+		case rle.RlePairs[i].isSubSegment(sub.RlePairs[j]):
+			for j < len(sub.RlePairs) && rle.RlePairs[i].isSubSegment(sub.RlePairs[j]) {
+				j++
+			}
+		default:
+			return false
+		}
+	}
+	return true
 }
 
 func (rle *Rles) IsSuperset(sub *Rles) bool {
