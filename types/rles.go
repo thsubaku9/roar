@@ -366,20 +366,28 @@ func (rle *Rles) Intersection(rle2 *Rles) Rles {
 func (rle *Rles) Difference(sub *Rles) Rles {
 	_rle := CreateRles()
 	var i, j int
+	var stepSize int = 0 //in case of splitting this will be update as zero for internal array counter
+	var cRlePair RlePair
 
 	for i < len(rle.RlePairs) && j < len(sub.RlePairs) {
+		stepSize = 1
+		cRlePair = rle.RlePairs[i]
 
-		if rle.RlePairs[i].Start+rle.RlePairs[i].RunLen < sub.RlePairs[j].Start {
-			_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[i])
-			i++
-		} else if sub.RlePairs[j].Start+sub.RlePairs[j].RunLen < rle.RlePairs[i].Start {
+	checkPoint:
+		if cRlePair.Start+cRlePair.RunLen < sub.RlePairs[j].Start {
+			_rle.RlePairs = append(_rle.RlePairs, cRlePair)
+			i += stepSize
+		} else if sub.RlePairs[j].Start+sub.RlePairs[j].RunLen < cRlePair.Start {
 			j++
-		} else if rle.RlePairs[i].isSubSegment(sub.RlePairs[j]) {
-			lSide, rSide := rle.RlePairs[i].splitReturn(sub.RlePairs[j])
-			j++
+		} else if cRlePair.isSubSegment(sub.RlePairs[j]) {
+			//log.Printf("%v claimed %v as subseg", cRlePair, sub.RlePairs[j])
+			lSide, rSide := cRlePair.splitReturn(sub.RlePairs[j])
 			if lSide != nil {
+				//log.Printf("Appending %v,%v on i-> %v and j-> %v\n", lSide.Start, lSide.Start+lSide.RunLen, i, j)
 				_rle.RlePairs = append(_rle.RlePairs, *lSide)
 			}
+			j++
+			i += stepSize
 			//subsequent sub.RlePairs might be subsegment of rSide
 			for ; j < len(sub.RlePairs) && rSide != nil && rSide.isSubSegment(sub.RlePairs[j]); j++ {
 				lSide, rSide = rSide.splitReturn(sub.RlePairs[j])
@@ -387,20 +395,27 @@ func (rle *Rles) Difference(sub *Rles) Rles {
 					_rle.RlePairs = append(_rle.RlePairs, *lSide)
 				}
 			}
-		} else if sub.RlePairs[j].isSubSegment(rle.RlePairs[i]) {
-			i++
-		} else if rle.RlePairs[i].lSideOverlap(sub.RlePairs[j]) {
-			_, rSide := rle.RlePairs[i].splitReturn(sub.RlePairs[j])
-			_rle.RlePairs = append(_rle.RlePairs, *rSide)
-			i++
+			if rSide != nil {
+				_rle.RlePairs = append(_rle.RlePairs, *rSide)
+			}
+		} else if sub.RlePairs[j].isSubSegment(cRlePair) {
+			i += stepSize
+		} else if cRlePair.lSideOverlap(sub.RlePairs[j]) {
+			_, rSide := cRlePair.splitReturn(sub.RlePairs[j])
+			i += stepSize
 			j++
-		} else { //rle.RlePairs[i].rSideOverlap(sub.RlePairs[j])
-			lSide, _ := rle.RlePairs[i].splitReturn(sub.RlePairs[j])
+			stepSize = 0
+			cRlePair = *rSide
+			goto checkPoint
+		} else { //cRlePair.rSideOverlap(sub.RlePairs[j])
+			lSide, _ := cRlePair.splitReturn(sub.RlePairs[j])
 			_rle.RlePairs = append(_rle.RlePairs, *lSide)
-			i++
-			j++
+			i += stepSize
+
 		}
 	}
+	_rle.RlePairs = append(_rle.RlePairs, rle.RlePairs[i:]...)
+
 	return _rle
 }
 
@@ -431,9 +446,10 @@ func (rle *Rles) IsSuperset(sub *Rles) bool {
 }
 
 func (rle *Rles) SymmetricDifference(sub *Rles) Rles {
-	_rle := CreateRles()
+	d1 := rle.Difference(sub)
+	d2 := sub.Difference(rle)
 
-	return _rle
+	return d1.Union(&d2)
 }
 
 func (rle *Rles) Rles2Sarr() Sarr {

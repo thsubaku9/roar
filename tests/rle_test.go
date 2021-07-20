@@ -96,11 +96,66 @@ func TestRleSetOps(t *testing.T) {
 		}
 		assert.Equal(t, expected.RlePairs, res.RlePairs, "Intersection failed")
 	})
-	t.Run("Check SymmetricDifference", func(t *testing.T) {
+	t.Run("Check Difference", func(t *testing.T) {
+		rle_0 = roar.CreateRles()
+		rle_1 = roar.CreateRles()
+
+		//10,25
+		rle_0.Add(roar.RlePair{Start: 10, RunLen: 15})
+		//30,50
+		rle_0.Add(roar.RlePair{Start: 30, RunLen: 20})
+		//80,100
+		rle_0.Add(roar.RlePair{Start: 80, RunLen: 20})
+		//100,120
+		rle_0.Add(roar.RlePair{Start: 100, RunLen: 20})
+
+		//0,10
+		rle_1.Add(roar.RlePair{Start: 0, RunLen: 10})
+		//15,35
+		rle_1.Add(roar.RlePair{Start: 15, RunLen: 20})
+		//40,50
+		rle_1.Add(roar.RlePair{Start: 40, RunLen: 10})
+		//90,110
+		rle_1.Add(roar.RlePair{Start: 90, RunLen: 20})
+
+		res := rle_0.Difference(&rle_1)
+		expected := roar.CreateRles()
+
+		for _, v := range []roar.RlePair{{Start: 11, RunLen: 3}, {Start: 36, RunLen: 3}, {Start: 80, RunLen: 9}, {Start: 111, RunLen: 9}} {
+			expected.Add(v)
+		}
+
+		assert.Equal(t, expected.RlePairs, res.RlePairs, "Difference failed")
 
 	})
-	t.Run("Check Difference", func(t *testing.T) {
+	t.Run("Check SymmetricDifference", func(t *testing.T) {
+		rle_0 = roar.CreateRles()
+		rle_1 = roar.CreateRles()
 
+		//10,25
+		rle_0.Add(roar.RlePair{Start: 10, RunLen: 15})
+		//30,50
+		rle_0.Add(roar.RlePair{Start: 30, RunLen: 20})
+		//80,100
+		rle_0.Add(roar.RlePair{Start: 80, RunLen: 20})
+		//100,120
+		rle_0.Add(roar.RlePair{Start: 100, RunLen: 20})
+
+		//0,10
+		rle_1.Add(roar.RlePair{Start: 0, RunLen: 10})
+		//15,35
+		rle_1.Add(roar.RlePair{Start: 15, RunLen: 20})
+		//40,50
+		rle_1.Add(roar.RlePair{Start: 40, RunLen: 10})
+		//90,110
+		rle_1.Add(roar.RlePair{Start: 90, RunLen: 20})
+
+		res := rle_0.SymmetricDifference(&rle_1)
+		expected := roar.CreateRles()
+		for _, v := range []roar.RlePair{{Start: 0, RunLen: 9}, {Start: 11, RunLen: 3}, {Start: 26, RunLen: 3}, {Start: 36, RunLen: 3}, {Start: 80, RunLen: 9}, {Start: 111, RunLen: 9}} {
+			expected.Add(v)
+		}
+		assert.Equal(t, expected.RlePairs, res.RlePairs, "SymmetricDifference failed")
 	})
 
 	t.Run("Check Sarr Conversion", func(t *testing.T) {
