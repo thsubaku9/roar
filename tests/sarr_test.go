@@ -77,7 +77,7 @@ func TestSarrSetOps(t *testing.T) {
 		assert.Equal(t, []uint16{3, 4}, _res.Arr, "Sarr Intersection Failed")
 	})
 
-	t.Run("Check Difference opeartion", func(t *testing.T) {
+	t.Run("Check Difference operation", func(t *testing.T) {
 		sarr_0 = roar.CreateSarr()
 		sarr_1 = roar.CreateSarr()
 		expected := make([]uint16, 0)
@@ -94,6 +94,68 @@ func TestSarrSetOps(t *testing.T) {
 		_res := sarr_0.Difference(&sarr_1)
 
 		assert.Equal(t, expected, _res.Arr, "Difference Failed")
+	})
+
+	t.Run("Check SymmetricDifference operation", func(t *testing.T) {
+		sarr_0 = roar.CreateSarr()
+		sarr_1 = roar.CreateSarr()
+		expected := make([]uint16, 0)
+		for i := 0; i < 50; i++ {
+			sarr_0.Add(uint16(i))
+
+			if i < 25 {
+				expected = append(expected, uint16(i))
+			}
+		}
+
+		for i := 25; i < 75; i++ {
+			sarr_1.Add(uint16(i))
+			if !(i < 50) {
+				expected = append(expected, uint16(i))
+			}
+		}
+
+		_res := sarr_0.SymmetricDifference(&sarr_1)
+		assert.Equal(t, expected, _res.Arr, "SymmetricDifference Failed")
+	})
+
+	t.Run("Check IsDisjoint function", func(t *testing.T) {
+		sarr_0 = roar.CreateSarr()
+		sarr_1 = roar.CreateSarr()
+
+		for i := 0; i < 10; i++ {
+			sarr_0.Add(uint16(i))
+			sarr_1.Add(uint16(i + 10))
+		}
+
+		_res := sarr_0.IsDisjoint(&sarr_1)
+		assert.Equal(t, true, _res, "IsDisjoint Failed for true")
+
+		sarr_1 = roar.CreateSarr()
+		for i := 0; i < 3; i++ {
+			sarr_1.Add(uint16(i))
+		}
+		_res = sarr_0.IsDisjoint(&sarr_1)
+		assert.Equal(t, false, _res, "IsDisjoint Failed for false")
+	})
+
+	t.Run("Check IsSubset function", func(t *testing.T) {
+		sarr_0 = roar.CreateSarr()
+		sarr_1 = roar.CreateSarr()
+
+		for i := 0; i < 100; i++ {
+			sarr_0.Add(uint16(i))
+			if i%2 == 0 {
+				sarr_1.Add(uint16(i))
+			}
+		}
+
+		_res := sarr_0.IsSubset(&sarr_1)
+		assert.Equal(t, true, _res, "IsSubset Failed for true")
+
+		sarr_1.Add(100)
+		_res = sarr_0.IsSubset(&sarr_1)
+		assert.Equal(t, false, _res, "IsSubset Failed for false")
 	})
 
 	t.Run("Check Bitmap conversion", func(t *testing.T) {

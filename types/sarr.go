@@ -249,6 +249,8 @@ func (ar *Sarr) SymmetricDifference(sub *Sarr) Sarr {
 		}
 	}
 
+	_sarr.Arr = append(_sarr.Arr, ar.Arr[i:]...)
+	_sarr.Arr = append(_sarr.Arr, sub.Arr[j:]...)
 	return _sarr
 }
 
