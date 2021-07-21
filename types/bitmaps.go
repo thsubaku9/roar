@@ -179,13 +179,15 @@ func (bmp *Bitmaps) IsDisjoint(bmp2 *Bitmaps) bool {
 	return true
 }
 
+//IsSubset checks if bmp2 is a subset
 func (bmp *Bitmaps) IsSubset(bmp2 *Bitmaps) bool {
 	return bmp2.IsSuperset(bmp)
 }
 
+//IsSuperset checks if bmp2 is a superset
 func (bmp *Bitmaps) IsSuperset(bmp2 *Bitmaps) bool {
 	for i := range bmp.Values {
-		if (*bmp).Values[i]|(*bmp2).Values[i] != (*bmp).Values[i] {
+		if (*bmp).Values[i]|(*bmp2).Values[i] != (*bmp2).Values[i] {
 			return false
 		}
 	}

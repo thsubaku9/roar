@@ -108,6 +108,39 @@ func TestBitmapSetOps(t *testing.T) {
 		assert.Equal(t, uint32(0), res.Values[0], "Difference Failed")
 	})
 
+	t.Run("Check Disjoint function", func(t *testing.T) {
+		bitmap_0 = roar.CreateBitmap()
+		bitmap_1 = roar.CreateBitmap()
+		for i := 0; i < 100; i += 2 {
+			bitmap_0.Add(uint16(i))
+			bitmap_1.Add(uint16(i + 1))
+		}
+
+		res := bitmap_0.IsDisjoint(&bitmap_1)
+		assert.Equal(t, true, res, "IsDisjoint Failed for true case")
+
+		bitmap_1.Add(0)
+		res = bitmap_0.IsDisjoint(&bitmap_1)
+		assert.Equal(t, false, res, "IsDisjoint Failed for false case")
+	})
+
+	t.Run("Check Subset function", func(t *testing.T) {
+		bitmap_0 = roar.CreateBitmap()
+		bitmap_1 = roar.CreateBitmap()
+		for i := 0; i < 50; i += 1 {
+			bitmap_0.Add(uint16(i))
+			if i > 20 && i < 40 {
+				bitmap_1.Add(uint16(i))
+			}
+		}
+		res := bitmap_0.IsSubset(&bitmap_1)
+		assert.Equal(t, true, res, "IsSubset Failed for true case")
+
+		bitmap_1.Add(uint16(80))
+		res = bitmap_0.IsSubset(&bitmap_1)
+		assert.Equal(t, false, res, "IsSubset Failed for false case")
+	})
+
 	t.Run("Check Sarr Conversion", func(t *testing.T) {
 		bitmap_0 = roar.CreateBitmap()
 		bitmap_0.Add(0)
