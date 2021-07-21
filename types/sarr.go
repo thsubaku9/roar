@@ -150,14 +150,8 @@ func (ar *Sarr) Union(ar2 *Sarr) Sarr {
 		}
 	}
 
-	for i < len(ar.Arr) {
-		_retSarr.Arr = append(_retSarr.Arr, ar.Arr[i])
-		i++
-	}
-	for j < len(ar2.Arr) {
-		_retSarr.Arr = append(_retSarr.Arr, ar2.Arr[j])
-		j++
-	}
+	_retSarr.Arr = append(_retSarr.Arr, ar.Arr[i:]...)
+	_retSarr.Arr = append(_retSarr.Arr, ar2.Arr[j:]...)
 
 	return _retSarr
 }
@@ -197,6 +191,7 @@ func (ar *Sarr) Difference(sub *Sarr) Sarr {
 		}
 	}
 
+	_sarr.Arr = append(_sarr.Arr, ar.Arr[i:]...)
 	return _sarr
 }
 
