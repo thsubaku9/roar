@@ -194,21 +194,22 @@ func (bmp *Bitmaps) IsSuperset(bmp2 *Bitmaps) bool {
 	return true
 }
 
-func (bmp *Bitmaps) Clamp(start, stop uint32) {
+func (bmp *Bitmaps) Clamp(start, stop uint16) Bitmaps {
+
+	_bmp := CreateBitmap()
+
 	index1 := int(start / 32)
 	offset1 := start % 32
 	index2 := int(stop / 32)
 	offset2 := stop % 32
 
-	for i := 0; i < index1; i++ {
-		bmp.Values[i] = 0
+	_bmp.Values[index1] = bmp.Values[index1] & (0xFFFFFFFF << offset1)
+	for i := index1 + 1; i < index2; i++ {
+		_bmp.Values[i] = bmp.Values[i]
 	}
-	bmp.Values[index1] &= (0xFFFFFFFF << offset1)
+	_bmp.Values[index2] = bmp.Values[index2] & ((0x02 << offset2) - 1)
 
-	for i := index2 + 1; i < util.BmpsLen; i++ {
-		bmp.Values[i] = 0
-	}
-	bmp.Values[index2] &= (0x02 << offset2) - 1
+	return _bmp
 }
 
 func (bmp *Bitmaps) Bmps2Sarr() Sarr {

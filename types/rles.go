@@ -452,6 +452,27 @@ func (rle *Rles) SymmetricDifference(sub *Rles) Rles {
 	return d1.Union(&d2)
 }
 
+func (rle *Rles) Clamp(start, stop uint16) Rles {
+	_rles := CreateRles()
+
+	var i int
+
+	for i = 0; i < len(rle.RlePairs) && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen < start; i++ {
+	}
+
+	for ; rle.RlePairs[i].Start <= stop; i++ {
+		if rle.RlePairs[i].Start >= start && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen <= stop {
+			_rles.RlePairs = append(_rles.RlePairs, rle.RlePairs[i])
+		} else if rle.RlePairs[i].Start < start && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen >= start && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen <= stop {
+			_rles.RlePairs = append(_rles.RlePairs, RlePair{Start: start, RunLen: rle.RlePairs[i].Start + rle.RlePairs[i].RunLen - start})
+		} else if rle.RlePairs[i].Start >= start && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen > stop {
+			_rles.RlePairs = append(_rles.RlePairs, RlePair{Start: rle.RlePairs[i].Start, RunLen: stop})
+		}
+	}
+
+	return _rles
+}
+
 func (rle *Rles) Rles2Sarr() Sarr {
 	_sarr := CreateSarr()
 	var _arr []uint16
