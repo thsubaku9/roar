@@ -460,13 +460,15 @@ func (rle *Rles) Clamp(start, stop uint16) Rles {
 	for i = 0; i < len(rle.RlePairs) && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen < start; i++ {
 	}
 
-	for ; rle.RlePairs[i].Start <= stop; i++ {
+	for ; i < len(rle.RlePairs) && rle.RlePairs[i].Start <= stop; i++ {
 		if rle.RlePairs[i].Start >= start && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen <= stop {
 			_rles.RlePairs = append(_rles.RlePairs, rle.RlePairs[i])
 		} else if rle.RlePairs[i].Start < start && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen >= start && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen <= stop {
 			_rles.RlePairs = append(_rles.RlePairs, RlePair{Start: start, RunLen: rle.RlePairs[i].Start + rle.RlePairs[i].RunLen - start})
-		} else if rle.RlePairs[i].Start >= start && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen > stop {
-			_rles.RlePairs = append(_rles.RlePairs, RlePair{Start: rle.RlePairs[i].Start, RunLen: stop})
+		} else if rle.RlePairs[i].Start >= start && rle.RlePairs[i].Start <= stop && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen > stop {
+			_rles.RlePairs = append(_rles.RlePairs, RlePair{Start: rle.RlePairs[i].Start, RunLen: stop - rle.RlePairs[i].Start})
+		} else {
+			_rles.RlePairs = append(_rles.RlePairs, RlePair{Start: start, RunLen: stop - start})
 		}
 	}
 
