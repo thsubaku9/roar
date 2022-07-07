@@ -2,6 +2,7 @@ package roar
 
 type SubContainer interface {
 	Add(element uint16)
+	Clamp(start, stop uint32)
 	Difference(sub SubContainer) SubContainer
 	Index(element uint16) (int, error) //returns the index location of provided element
 	Intersection(sub SubContainer) (SubContainer, error)

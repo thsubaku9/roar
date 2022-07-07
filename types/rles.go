@@ -18,7 +18,7 @@ func CreateRles() Rles {
 	return Rles{make([]RlePair, 0), util.Rles}
 }
 
-//!HELPER FUNCS
+// !HELPER FUNCS
 
 // tells if p2 is left overlap wrt p1
 func (p1 RlePair) lSideOverlap(p2 RlePair) bool {

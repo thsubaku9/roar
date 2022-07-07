@@ -28,7 +28,7 @@ func (bmp *Bitmaps) Add(elem uint16) {
 func (bmp *Bitmaps) Remove(elem uint16) {
 	index := elem / 32
 	offset := elem % 32
-	bmp.Values[index] &= 0xFFFF ^ (1 << offset)
+	bmp.Values[index] &= 0xFFFFFFFF ^ (1 << offset)
 }
 
 //Max returns the maximum value of element present in the bitmap (returns error if bitmap is empty)
@@ -192,6 +192,23 @@ func (bmp *Bitmaps) IsSuperset(bmp2 *Bitmaps) bool {
 		}
 	}
 	return true
+}
+
+func (bmp *Bitmaps) Clamp(start, stop uint32) {
+	index1 := int(start / 32)
+	offset1 := start % 32
+	index2 := int(stop / 32)
+	offset2 := stop % 32
+
+	for i := 0; i < index1; i++ {
+		bmp.Values[i] = 0
+	}
+	bmp.Values[index1] &= (0xFFFFFFFF << offset1)
+
+	for i := index2 + 1; i < util.BmpsLen; i++ {
+		bmp.Values[i] = 0
+	}
+	bmp.Values[index2] &= (0x02 << offset2) - 1
 }
 
 func (bmp *Bitmaps) Bmps2Sarr() Sarr {
