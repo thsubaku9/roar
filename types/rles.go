@@ -18,7 +18,7 @@ func CreateRles() Rles {
 	return Rles{make([]RlePair, 0), util.Rles}
 }
 
-//!HELPER FUNCS
+// !HELPER FUNCS
 
 // tells if p2 is left overlap wrt p1
 func (p1 RlePair) lSideOverlap(p2 RlePair) bool {
@@ -450,6 +450,29 @@ func (rle *Rles) SymmetricDifference(sub *Rles) Rles {
 	d2 := sub.Difference(rle)
 
 	return d1.Union(&d2)
+}
+
+func (rle *Rles) Clamp(start, stop uint16) Rles {
+	_rles := CreateRles()
+
+	var i int
+
+	for i = 0; i < len(rle.RlePairs) && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen < start; i++ {
+	}
+
+	for ; i < len(rle.RlePairs) && rle.RlePairs[i].Start <= stop; i++ {
+		if rle.RlePairs[i].Start >= start && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen <= stop {
+			_rles.RlePairs = append(_rles.RlePairs, rle.RlePairs[i])
+		} else if rle.RlePairs[i].Start < start && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen >= start && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen <= stop {
+			_rles.RlePairs = append(_rles.RlePairs, RlePair{Start: start, RunLen: rle.RlePairs[i].Start + rle.RlePairs[i].RunLen - start})
+		} else if rle.RlePairs[i].Start >= start && rle.RlePairs[i].Start <= stop && rle.RlePairs[i].Start+rle.RlePairs[i].RunLen > stop {
+			_rles.RlePairs = append(_rles.RlePairs, RlePair{Start: rle.RlePairs[i].Start, RunLen: stop - rle.RlePairs[i].Start})
+		} else {
+			_rles.RlePairs = append(_rles.RlePairs, RlePair{Start: start, RunLen: stop - start})
+		}
+	}
+
+	return _rles
 }
 
 func (rle *Rles) Rles2Sarr() Sarr {

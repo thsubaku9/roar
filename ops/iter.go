@@ -1,6 +1,6 @@
 package roar
 
 type Iterator interface {
-	next() interface{}
-	hasNext() bool
+	Next() interface{}
+	HasNext() bool
 }

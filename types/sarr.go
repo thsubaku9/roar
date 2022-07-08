@@ -254,6 +254,12 @@ func (ar *Sarr) SymmetricDifference(sub *Sarr) Sarr {
 	return _sarr
 }
 
+func (ar *Sarr) Clamp(start, stop uint16) Sarr {
+	startPos, _ := ar.findIndex(start, 0, len(ar.Arr))
+	endPos, _ := ar.findIndex(stop, 0, len(ar.Arr))
+	return CreateSarr(ar.Arr[startPos:endPos]...)
+}
+
 func (ar *Sarr) Sarr2Bmps() Bitmaps {
 	_bmp := CreateBitmap()
 	for _, v := range ar.Arr {
