@@ -158,6 +158,19 @@ func TestSarrSetOps(t *testing.T) {
 		assert.Equal(t, false, _res, "IsSubset Failed for false")
 	})
 
+	t.Run("Check Clamp function", func(t *testing.T) {
+		sarr_0 = roar.CreateSarr()
+
+		sarr_0.Add(1)
+		sarr_0.Add(2)
+		sarr_0.Add(20)
+		sarr_0.Add(80)
+		sarr_0.Add(800)
+
+		res := sarr_0.Clamp(10, 100)
+		assert.Equal(t, res.NumElem(), uint16(2), "Clamp failed for bitmap")
+	})
+
 	t.Run("Check Bitmap conversion", func(t *testing.T) {
 		sarr_0 = roar.CreateSarr()
 		sarr_0.Add(0)

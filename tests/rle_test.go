@@ -68,9 +68,7 @@ func TestRleSetOps(t *testing.T) {
 
 		expected := roar.CreateRles()
 
-		for _, v := range []roar.RlePair{{5, 3}, {10, 15}, {30, 20}, {60, 10}, {75, 25}, {105, 10}} {
-			expected.Add(v)
-		}
+		expected.RlePairs = []roar.RlePair{{5, 3}, {10, 15}, {30, 20}, {60, 10}, {75, 25}, {105, 10}}
 		assert.Equal(t, expected.RlePairs, res.RlePairs, "Union failed")
 	})
 	t.Run("Check Intersection operation", func(t *testing.T) {
@@ -156,6 +154,18 @@ func TestRleSetOps(t *testing.T) {
 			expected.Add(v)
 		}
 		assert.Equal(t, expected.RlePairs, res.RlePairs, "SymmetricDifference failed")
+	})
+
+	t.Run("Check Clamp function", func(t *testing.T) {
+		rle_0 = roar.CreateRles()
+
+		rle_0.Add(roar.RlePair{Start: 0, RunLen: 1})
+		rle_0.Add(roar.RlePair{Start: 20, RunLen: 0})
+		rle_0.Add(roar.RlePair{Start: 80, RunLen: 0})
+		rle_0.Add(roar.RlePair{Start: 800, RunLen: 0})
+
+		res := rle_0.Clamp(10, 100)
+		assert.Equal(t, res.NumElem(), uint16(2), "Clamp failed for bitmap")
 	})
 
 	t.Run("Check Sarr Conversion", func(t *testing.T) {
