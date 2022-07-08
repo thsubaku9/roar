@@ -1,4 +1,4 @@
-name: Testing
+name: Review Phase
 on: [pull_request_review]
 jobs:
   Explore-GitHub-Actions:
