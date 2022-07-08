@@ -1,5 +1,10 @@
 name: Testing
-on: [push, pull_request_review]
+on: 
+  push:
+    branches:
+      - main
+      - master      
+  pull_request_review:    
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
