@@ -1,5 +1,5 @@
 name: Review Phase
-on: [pull_request_review]
+on: [pull_request]
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
