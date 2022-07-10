@@ -93,7 +93,7 @@ func TestSarrSetOps(t *testing.T) {
 
 		_res := sarr_0.Difference(&sarr_1)
 
-		assert.Equal(t, expected, _res.Arr, "Difference Failed")
+		assert.Equal(t, uint16(len(expected)), _res.NumElem(), "Difference Failed")
 	})
 
 	t.Run("Check SymmetricDifference operation", func(t *testing.T) {

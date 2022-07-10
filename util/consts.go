@@ -1,9 +1,9 @@
 package util
 
-type ContainerType int
+type SubContainerType int
 
 const (
-	Bmps ContainerType = iota
+	Bmps SubContainerType = iota
 	Rles
 	Sarr
 )

@@ -9,14 +9,11 @@ import (
 //bitmaps stores 2^16 values in 32bit words -> 2048 entries
 type Bitmaps struct {
 	Values []uint32
-	CType  util.ContainerType
+	scType util.SubContainerType
 }
 
 func CreateBitmap() Bitmaps {
-	return Bitmaps{
-		Values: make([]uint32, util.BmpsLen),
-		CType:  util.Bmps,
-	}
+	return Bitmaps{make([]uint32, util.BmpsLen), util.Bmps}
 }
 
 func (bmp *Bitmaps) Add(elem uint16) {

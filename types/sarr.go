@@ -2,13 +2,14 @@ package roar
 
 import (
 	"fmt"
+	roar "roar/interfaces"
 	"roar/util"
 	"sort"
 )
 
 type Sarr struct {
-	Arr   []uint16
-	CType util.ContainerType
+	Arr    []uint16
+	scType util.SubContainerType
 }
 
 //CreateSarr takes an array of uint16 irrsepective of being sorted
@@ -175,7 +176,20 @@ func (ar *Sarr) Intersection(ar2 *Sarr) Sarr {
 	return _retSarr
 }
 
-func (ar *Sarr) Difference(sub *Sarr) Sarr {
+func (ar *Sarr) Difference(sub roar.SubContainer) roar.SubContainer {
+
+	switch sub.ScType() {
+	case util.Sarr:
+		res, _ := sub.(*Sarr)
+		res2 := ar.difference(res)
+		return &res2
+	default:
+		return &Sarr{}
+	}
+
+}
+
+func (ar *Sarr) difference(sub *Sarr) Sarr {
 	_sarr := CreateSarr()
 	var i, j int
 
@@ -195,7 +209,19 @@ func (ar *Sarr) Difference(sub *Sarr) Sarr {
 	return _sarr
 }
 
-func (ar *Sarr) IsDisjoint(sub *Sarr) bool {
+func (ar *Sarr) IsDisjoint(sub roar.SubContainer) bool {
+
+	switch sub.ScType() {
+	case util.Sarr:
+		res, _ := sub.(*Sarr)
+		return ar.isDisjoint(res)
+	default:
+		return false
+	}
+
+}
+
+func (ar *Sarr) isDisjoint(sub *Sarr) bool {
 	var i, j int
 
 	for i, j = 0, 0; i < len(ar.Arr) && j < len(sub.Arr); {
@@ -211,7 +237,18 @@ func (ar *Sarr) IsDisjoint(sub *Sarr) bool {
 	return true
 }
 
-func (ar *Sarr) IsSubset(ar2 *Sarr) bool {
+func (ar *Sarr) IsSubset(sub roar.SubContainer) bool {
+
+	switch sub.ScType() {
+	case util.Sarr:
+		res, _ := sub.(*Sarr)
+		return ar.isSubset(res)
+	default:
+		return false
+	}
+}
+
+func (ar *Sarr) isSubset(ar2 *Sarr) bool {
 	var i, j int
 
 	for i, j = 0, 0; i < len(ar.Arr) && j < len(ar2.Arr); {
@@ -228,7 +265,17 @@ func (ar *Sarr) IsSubset(ar2 *Sarr) bool {
 	return j == len(ar2.Arr)
 }
 
-func (ar *Sarr) IsSuperset(ar2 *Sarr) bool {
+func (ar *Sarr) IsSuperset(sub roar.SubContainer) bool {
+	switch sub.ScType() {
+	case util.Sarr:
+		res, _ := sub.(*Sarr)
+		return ar.isSuperset(res)
+	default:
+		return false
+	}
+}
+
+func (ar *Sarr) isSuperset(ar2 *Sarr) bool {
 	return ar2.IsSubset(ar)
 }
 
@@ -254,7 +301,12 @@ func (ar *Sarr) SymmetricDifference(sub *Sarr) Sarr {
 	return _sarr
 }
 
-func (ar *Sarr) Clamp(start, stop uint16) Sarr {
+func (ar *Sarr) Clamp(start, stop uint16) roar.SubContainer {
+	sc := ar.clamp(start, stop)
+	return &sc
+}
+
+func (ar *Sarr) clamp(start, stop uint16) Sarr {
 	startPos, _ := ar.findIndex(start, 0, len(ar.Arr))
 	endPos, _ := ar.findIndex(stop, 0, len(ar.Arr))
 	return CreateSarr(ar.Arr[startPos:endPos]...)
@@ -286,4 +338,8 @@ func (ar *Sarr) Sarr2Rles() Rles {
 	_rle.RlePairs = append(_rle.RlePairs, RlePair{Start: ar.Arr[startPos], RunLen: uint16(endPos - startPos - 1)})
 	_rle.compact()
 	return _rle
+}
+
+func (ar *Sarr) ScType() util.SubContainerType {
+	return ar.scType
 }

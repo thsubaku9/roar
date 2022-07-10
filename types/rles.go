@@ -11,7 +11,7 @@ type RlePair struct {
 }
 type Rles struct {
 	RlePairs []RlePair
-	CType    util.ContainerType
+	scType   util.SubContainerType
 }
 
 func CreateRles() Rles {
