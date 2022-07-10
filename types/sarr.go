@@ -133,7 +133,19 @@ func (ar *Sarr) Rank(elem uint16) uint16 {
 	return uint16(index + 1)
 }
 
-func (ar *Sarr) Union(ar2 *Sarr) Sarr {
+func (ar *Sarr) Union(sub roar.SubContainer) roar.SubContainer {
+
+	switch sub.ScType() {
+	case util.Sarr:
+		res, _ := sub.(*Sarr)
+		res2 := ar.union(res)
+		return &res2
+	default:
+		return &Sarr{}
+	}
+}
+
+func (ar *Sarr) union(ar2 *Sarr) Sarr {
 	_retSarr := CreateSarr()
 	var i, j int
 	for i < len(ar.Arr) && j < len(ar2.Arr) {
@@ -157,7 +169,19 @@ func (ar *Sarr) Union(ar2 *Sarr) Sarr {
 	return _retSarr
 }
 
-func (ar *Sarr) Intersection(ar2 *Sarr) Sarr {
+func (ar *Sarr) Intersection(sub roar.SubContainer) roar.SubContainer {
+
+	switch sub.ScType() {
+	case util.Sarr:
+		res, _ := sub.(*Sarr)
+		res2 := ar.intersection(res)
+		return &res2
+	default:
+		return &Sarr{}
+	}
+}
+
+func (ar *Sarr) intersection(ar2 *Sarr) Sarr {
 	_retSarr := Sarr{}
 
 	for i, j := 0, 0; i < len(ar.Arr) && j < len(ar2.Arr); {
@@ -279,7 +303,19 @@ func (ar *Sarr) isSuperset(ar2 *Sarr) bool {
 	return ar2.IsSubset(ar)
 }
 
-func (ar *Sarr) SymmetricDifference(sub *Sarr) Sarr {
+func (ar *Sarr) SymmetricDifference(sub roar.SubContainer) roar.SubContainer {
+
+	switch sub.ScType() {
+	case util.Sarr:
+		res, _ := sub.(*Sarr)
+		res2 := ar.symmetricDifference(res)
+		return &res2
+	default:
+		return &Sarr{}
+	}
+}
+
+func (ar *Sarr) symmetricDifference(sub *Sarr) Sarr {
 	_sarr := CreateSarr()
 	var i, j int
 

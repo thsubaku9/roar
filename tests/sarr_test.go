@@ -56,7 +56,8 @@ func TestSarrSetOps(t *testing.T) {
 		sarr_1.Add(6)
 
 		_res := sarr_0.Union(&sarr_1)
-		assert.Equal(t, []uint16{0, 1, 2, 3, 4, 5, 6}, _res.Arr, "Sarr Union Failed")
+		_res2, _ := _res.(*roar.Sarr)
+		assert.Equal(t, []uint16{0, 1, 2, 3, 4, 5, 6}, _res2.Arr, "Sarr Union Failed")
 	})
 
 	t.Run("Check Intersection operation", func(t *testing.T) {
@@ -74,7 +75,8 @@ func TestSarrSetOps(t *testing.T) {
 		sarr_1.Add(6)
 
 		_res := sarr_0.Intersection(&sarr_1)
-		assert.Equal(t, []uint16{3, 4}, _res.Arr, "Sarr Intersection Failed")
+		_res2, _ := _res.(*roar.Sarr)
+		assert.Equal(t, []uint16{3, 4}, _res2.Arr, "Sarr Intersection Failed")
 	})
 
 	t.Run("Check Difference operation", func(t *testing.T) {
@@ -116,7 +118,8 @@ func TestSarrSetOps(t *testing.T) {
 		}
 
 		_res := sarr_0.SymmetricDifference(&sarr_1)
-		assert.Equal(t, expected, _res.Arr, "SymmetricDifference Failed")
+		_res2, _ := _res.(*roar.Sarr)
+		assert.Equal(t, expected, _res2.Arr, "SymmetricDifference Failed")
 	})
 
 	t.Run("Check IsDisjoint function", func(t *testing.T) {
