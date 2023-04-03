@@ -9,7 +9,9 @@ const (
 )
 
 const (
-	SplitVal uint32 = 65536
-	BmpRange int    = 32
-	BmpsLen  int    = 2048
+	Limit          int = 1 << 16
+	BmpRange       int = 32
+	BmpsLen        int = Limit / (BmpRange)
+	PivotPointUp   int = 4096
+	PivotPointDown int = 2048
 )
